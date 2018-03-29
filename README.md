@@ -1,5 +1,5 @@
 # ByzAgree
-Asynchronous Byzantine Fault Tolerant distributed network (BFT) that is NOT Hashgraph
+Asynchronous Byzantine Fault Tolerant (Async BFT) distributed network that is NOT Hashgraph
 
 IMPORTANT: I am not a lawyer and this repo does not contain any valid legal advice. Any and all code added to this repo is meant for discussion of my thoughts and experiments only. As a non-lawyer, I cannot say if any or all of the code violates one or several patents, so do not execute, copy or encorporate any of this code into any project for any purpose whatsoever. 
 
@@ -9,11 +9,11 @@ Hashgraph is a very promising, mathematically sound scheme for replacing blockch
 
 I think I understand Baird's actions - he has put considerable time, energy and genius into this work, and would like to make some money. His approach appears to be to create a cryptocoin in response to overwhelming requests. Baird is doing this through his company, Swirlds, and its perpetual membership on the Hedera Hashgraph governance council. Hedera members will jointly run a Hashgraph-based network and coin, and will not allow a fork. All of this sounds good, but another way of saying it is - if they decide you are competing with their coin in any way they can enforce their patents and may shut you down.
 
-I don't want to get into the freedom/establishment/anarchy/bubble debate, because I don't begrudge Baird's efforts to make a buck. I congratulate him and wish him the best with his business ventures. I just wish there was an open source BFT.
+I don't want to get into the freedom/establishment/anarchy/bubble debate, because I don't begrudge Baird's efforts to make a buck. I congratulate him and wish him the best with his business ventures. I just wish there was an open source, provably 100% resolving Async BFT.
 
 You may or may not want to create a coin. Maybe you want to create a game, or a fair on-line auction, or a notary service, or maybe you have a totally unique idea you aren't ready to talk about yet, you might be like me and would prefer not having to worry about some future risk of you or one of your users crossing some legal line. You and I might prefer open source for all sorts of reasons.
 
-I have two Questions: (1) Are Baird's patents valid given his statements about Hashgraph? (2) Is it possible to implement BFT some other way, without violating his patents?
+I have two Questions: (1) Are Baird's patents valid given his statements about Hashgraph? (2) Is it possible to implement Async BFT some other way, without violating his patents?
 
 I am not a lawyer, but am considering starting a crowd-funding project to get a lawyer's opinion. I would like to lay-out some preliminary info which might be useful.
 

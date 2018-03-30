@@ -14,7 +14,6 @@ I don't want to get into the freedom/establishment/anarchy/bubble debate, becaus
 
 You may or may not want to create a coin. Maybe you want to create a game, or a fair on-line auction, or a notary service, or maybe you have a totally unique idea you aren't ready to talk about yet. You might be like me and would prefer not having to worry about some future risk of you or one of your users crossing some legal line. Whatever the reason for wanting open source, I wish Baird well but have to fork from his path at this point.
 
-
 I have two Questions and a Goal:
 (1) Are Baird's patents valid given his statements about Hashgraph? 
 (2) Is it possible to implement Async BFT some other way, without violating his patents?
@@ -22,7 +21,9 @@ I have two Questions and a Goal:
 
 I am not a lawyer, but am considering starting a crowd-funding project to get a lawyer's opinion. I would like to lay-out some preliminary info which might be useful.
 
-*Hashgraph's Foundations
+If you have ideas or code you would like to contribute, I can be contacted at dave at davidwalley.ca, but please keep in mind that I will use public domain and obvious ideas only, and I want to avoid being "poisoned" by any ideas that might infringe any patent or copyright claims of Hashgraph or anyone else.
+
+# Hashgraph's Foundations
 
 According to Baird, Hashgraph is based on: DAGs - directed acyclic graphs (the "graph" part of Hashgraph); the gossip communications scheme; Byzantine voting algorithms; and, super-efficient "gossip-about-gossip" that uses a "hash", and virtual voting.  Undoubtedly, there are many other details, but considering each:
 - DAG is a well-known mathematical abstraction studied by others working on Bitcoin-related solutions, and allows visualization of the order of communications in a computer network. It does not affect a network in any way -  it merely describes what is already happening.
@@ -32,7 +33,22 @@ According to Baird, Hashgraph is based on: DAGs - directed acyclic graphs (the "
 - Hashing is a standard process using in programming.
 - Virtual Voting may be a key idea, but I think it is well understood, especially in political circles.
 
-I am certain that a DAG can be communicated in some other inefficient way.  Any other way would certainly be less brilliant, but does it matter?  Baird claims he can achieve hundreds of transactions in a hundredth of a second.  Suppose it took 2 hundredths of a second - would anyone care? Perhaps industrial-scale use would require two computers to do what Baird can do with one - does that matter in the context of a multi-million dollar opportunity?
+I am certain that the information contained in a DAG can be communicated in some other, perhaps inefficient, way. Any other way would certainly be less brilliant, but does it matter? Hashgraph claims hundreds of transactions in a hundredth of a second.  Suppose it took 2 hundredths of a second - would anyone care? Perhaps industrial-scale use would require two computers to do what Hashgraph can do with one - does that matter in the context of a multi-million dollar opportunity?
 
 Writing any software is hard and details take time and effort, but I think it is possible to write a replacement for Hashgraph with no use of the gossip-about-gossip idea.
-A rewrite should not be anywhere near as difficult as the task that originally faced Baird.  He started with the admirable idea of mathematically proving the validity of every step.  We don't need to prove anything - yet.  We have a working example of a solution (Hashgraph), and we merely need to duplicate its end functionality.  We can test our solution (but not prove it) at every step.  If sufficient testing shows that a new solution gives the same results as Hashgraph, then it would definitely be worth proving it mathematically.
+
+A rewrite should not be anywhere near as difficult as the task that originally faced Baird. For one thing, we know that at least one solution is possible. Where he looked for a working scheme where none existed before, we look for a second.
+
+He started with the admirable idea of mathematically proving the validity of every step. We don't need to prove anything - yet. We can test our solution (but not prove it) at every step.  If sufficient testing shows that a new solution gives the same results as Hashgraph, then it would definitely be worth proving it mathematically.
+
+# First Stab at Another Obvious Scheme
+- Look for network communications scheme giving consensus time to a message and its payload.
+- Each node keeps a time-ordered log of messages, and a copy of as much of every other node's log as known.
+- Messages are encrypted and signed so that once created they cannot be altered or forged, and can be passed along without alteration.
+- Messages are passed around using a gossip protocol.
+- Log and time-stamp messages that have information that might be useful for reaching consensus about a time.
+- Compress logs by never duplicating information when a reference to info in some other log entry will do.
+
+As my first task, I want to write a simple demo of the above. I won't be implementing a working version yet, just something to help visualize and verify how the scheme will work.
+
+

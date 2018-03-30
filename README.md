@@ -1,18 +1,19 @@
 # ByzAgree
-NOT Hashgraph (nor Blockchain) - Towards and Open Asynchronous Byzantine Fault Tolerant Consensus Algorithm
-
-**IMPORTANT: I am not a lawyer and this code repository does not contain any valid legal advice. Any and all code to be added is meant for discussion of my thoughts and experiments only. As a non-lawyer, I cannot say if any or all of the code violates one or several patents, so do not execute, copy, use or incorporate any of this code in any project for any purpose whatsoever.
-
-**One goal of this repo is to ask whether an alternative to Hashgraph would be subject to their patents or not. Therefore, I hereby put any original work or ideas of mine in this repo under the MIT license, but if you use anything covered by the Hashgraph patents, which I cannot advise you on, then obviously you have to contact Swirlds, the owner, to avoid infringement.
-
+NOT Hashgraph (nor Blockchain) - Towards an Open Asynchronous Byzantine Fault Tolerant Consensus Algorithm
 
 Blockchain - the basic algorithm that BitCoin and related cryptocurrencies use, has a new challenger named Hashgraph. A coin, Hedera Hashgraph, has been announced by the Hedera governance council. While provably superior on many fronts to any blockchain variant including Etherium, many are rejecting Hashgraph because of the patents claimed by Swirlds and inventor Leemon Baird.
 
-I understand Baird's actions - he has put considerable time, energy and genius into this work, and would like to make some money. He has had a flood of requests for a cyptocurrency, and is responding through his company, Swirlds, and its perpetual membership on the governance council. Hedera members will jointly run a Hashgraph-based network and coin, and will not allow a fork. All of this sounds good, but another way of saying it is - if they decide you are competing with their coin in any way they can enforce their patents and may shut you down.
+
+**IMPORTANT: I am not a lawyer and this code repository does not contain any valid legal advice. Any and all code to be added is meant for discussion of my thoughts and experiments only. As a non-lawyer, I cannot say if any or all of the code violates one or several patents, so do not execute, copy, use or incorporate any of this code in any project for any purpose whatsoever.**
+
+**One goal of this repo is to ask whether an alternative to Hashgraph would be subject to their patents or not. Therefore, I hereby put any original work or ideas of mine in this repo under the MIT license, but if you use anything covered by the Hashgraph patents, which I cannot advise you on, then obviously you have to contact Swirlds, the owner, to avoid infringement.**
+
+
+I understand Baird's actions - he has put considerable time, energy and genius into this work, and would like to make some money in return. He has had a flood of requests for a cyptocurrency, and is responding through his company, Swirlds, and its perpetual membership on the governance council. Hedera members will jointly run a Hashgraph-based network and coin, and will not allow a fork. All of this sounds good, but another way of saying it is - if they decide you are competing with their coin in any way they can enforce their patents and may shut you down.
 
 I don't want to get into the freedom/establishment/anarchy/bubble debate, because I don't begrudge Baird's efforts to make a buck. I congratulate him and thank him. I just wish there was an open source, provably 100% resolving Async BFT that I could use for my non-coin project.
 
-You may or may not want to create a coin. Maybe you want to create a game, or a fair on-line auction, or a notary service, or maybe you have a totally unique idea you aren't ready to talk about yet. You might be like me and would prefer not having to worry about some future risk of you or one of your users crossing some legal line. Whatever the reason for wanting open source, I wish Baird well, but have to fork from his path at this point.
+You may or may not want to create a coin. Maybe you want to create a game, or a fair on-line auction, or a notary service, or maybe you have a totally unique idea you aren't ready to talk about yet. You might be like me and would prefer not having to worry about some future risk of you or one of your users crossing some legal line. Whatever my reason for wanting open source, I wish Baird well, but have to fork from his path at this point.
 
 I have two Questions and a Goal:
 

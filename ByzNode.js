@@ -3,6 +3,7 @@
 
 var g = require("./G.js");
 
+// ByzAgree node class.
 function ByzNode() {
   this._sName;
   this._iWhich;
@@ -22,6 +23,7 @@ ByzNode.byznodeNEW = function(a_sName, a_iWhich, a_nNodes) {
 
 ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   var me = this;
+  // Initialize or reset the object.
   me._sName = a_sName;
   me._iWhich = a_iWhich;
   me._nNodes = a_nNodes;
@@ -36,6 +38,7 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   return true;
 };
 
+// Create log item.
 ByzNode.prototype.Create = function(a_sData) {
   var me = this;
   var i = me._a2sData.length;
@@ -46,11 +49,13 @@ ByzNode.prototype.Create = function(a_sData) {
   return true;
 };
 
+// Encrypt and sign a message.
 ByzNode.prototype._sSeal = function(a_i, a_sData, a_when) {
   var me = this;
   return "(" + me._iWhich + ":" + a_i + ',"' + a_sData + '",' + a_when + ")" + me._sName;
 };
 
+// Report current state (for debug mostly).
 ByzNode.prototype.s = function() {
   var me = this;
   return me._sName + " " + "TODO";

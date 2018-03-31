@@ -3,6 +3,7 @@
 
 var ByzNode = require("./ByzNode.js");
 
+// BFT demo class.
 function Byzantine() {
   this._abyznode;
 }
@@ -17,6 +18,7 @@ Byzantine.byzantineNEW = function() {
 
 Byzantine.prototype._bRenew = function() {
   var me = this;
+  // Initialize or reset the object.
   me._abyznode = [];
   var asNAMES = ["ann", "bob", "cam", "dan", "eve"];
   var n = asNAMES.length;
@@ -27,6 +29,7 @@ Byzantine.prototype._bRenew = function() {
   return true;
 };
 
+// Start a simulated run.
 Byzantine.prototype.Go = function() {
   var me = this;
   me._abyznode[0].Create("Payload 1");
@@ -37,6 +40,8 @@ Byzantine.prototype.Go = function() {
   return true;
 };
 
+// Create a global object.
 var g_byzantine = Byzantine.byzantineNEW();
+// Run.
 g_byzantine.Go();
 

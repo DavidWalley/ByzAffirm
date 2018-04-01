@@ -22,7 +22,7 @@ You may or may not want to create a coin. Maybe you want to create a game, or an
 
 (2) Is it possible to implement Async BFT some other way, without violating his patents?
 
-(3) Write a working implementation of some other scheme using public information and obvious decisions only, so it can work around any patents.
+(3) The Goal - Write a working implementation of some other scheme using public information and obvious decisions only, so it can work around any patents.
 
 I am not a lawyer, but am considering starting a crowd-funding project to get a lawyer's opinion. I would like to lay-out some preliminary info which might be useful.
 
@@ -55,5 +55,7 @@ I think the following are reasonably obvious:
 - Compress logs by not duplicating information when a reference to another log entry will do.
 - Compress logs by not storing information that can be shown to have no influence or further influence on reaching our goal.
 - When queried, a node replies with the data-payload, the best estimate of when the message became well-known, and whether enough information is on-hand to finalize the ordering of the message or not, using Byzantine Fault Tolerant algorithms described in expired patents only.
+
+I think the above may be enough to achieve the goal, but I need to write some code now.
 
 As my first task, I want to write a simple demo of the above and see if it works and/or what needs modification. I won't be implementing a full, working version yet, just something to help visualize and test how the scheme will work.

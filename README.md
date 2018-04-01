@@ -1,5 +1,6 @@
 # ByzAgree
 NOT Hashgraph (nor Blockchain) - Towards an Open Asynchronous Byzantine Fault Tolerant Consensus Algorithm
+tldr: A non-lawyer suggests Hashgraph patents may not be valid, and is working on a possible open alternative.
 
 **NOTE: There is no working code here, yet.**
 

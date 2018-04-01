@@ -49,7 +49,7 @@ I think the following are reasonably obvious:
 - Each node keeps a time-ordered and time-stamped log of all received messages that might logically contain information useful in our goal, i.e., data-payloads and times of reception.
 - Log entries are encrypted and signed immediately (using any good public/private key cryptographic protocol), so they can be passed along further without alteration or fear of alteration or forgery.
 - Messages are passed around using gossip protocol.
-- To avoid redundant communications, each node actively reconstructs a copy of as much of every other node's log as possible.
+- To avoid redundant communications, each node actively maintains a copy of as much of every other node's log as possible.
 - Compress logs by not duplicating information when a reference to another log entry will do.
 - Compress logs by not storing information that can be shown to have no influence or further influence on reaching our goal.
 - When queried, a node replies with the data-payload, the best estimate of when the message became well-known, and whether enough information is on-hand to finalize the ordering of the message or not, using Byzantine Fault Tolerant algorithms described in expired patents only.

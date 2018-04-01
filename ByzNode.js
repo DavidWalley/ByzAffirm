@@ -1,8 +1,9 @@
 // ByzNode.js
-// ByzAgree Network Node
-// (c)2018 David C. Walley
+// Network Node in ByzAgree Async BFTolerant communications scheme test.
+// Non-patented content (c)2018 David C. Walley, MIT license.
 
-var g = require("./G.js").g;
+var G = require("./G.js");
+var g = G.g;
 
 // ByzAgree network node class.
 function ByzNode() {
@@ -55,7 +56,8 @@ ByzNode.prototype.Create = function(a_sData) {
 // Encrypt and sign a message.
 ByzNode.prototype._sSeal = function(a_i, a_sData, a_when) {
   var me = this;
-  return "(" + a_when + "," + a_sData + ")" + me._sName;
+  var s = a_when + "," + a_sData;
+  return "(" + G.sHASH(s) + "/" + s + ")" + me._sName;
 };
 
 // Report current state (for debug mostly).

@@ -1,6 +1,6 @@
 // G.js
 // General Purpose JavaScript routines. Global, polluting, but handy code conveniences.
-// (c)2018 David C. Walley
+// Non-patented content (c)2018 David C. Walley, MIT license.
 
 // Class of super global, super dangerous, but super handy code conveniences.
 function G() {
@@ -29,6 +29,18 @@ G.sVERSION = "DEV";
 // Set start-up procedure to run when document is ready.
 G.ONrEADY = function(a_f) {
   return true;
+};
+
+// Hash given text (simple demo hash).
+G.sHASH = function(a_s) {
+  var r_bits32 = 0;
+  if ("" !== a_s) {
+    for (var i = 0; i < a_s.length; i++) {
+      r_bits32 = (r_bits32 << 5) - r_bits32 + a_s.charCodeAt(i);
+      r_bits32 |= 0;
+    }
+  }
+  return (r_bits32 & 65535).toString(16);
 };
 
 // Report if a variable is defined (or not).
@@ -110,6 +122,7 @@ G.sFIX = function(a_v, a_sDefault) {
 
 exports.g = G.gNEW();
 exports.gNEW = G.gNEW;
+exports.sHASH = G.sHASH;
 exports.bIS = G.bIS;
 exports.bNO = G.bNO;
 exports.whenNow_s = G.prototype.whenNow_s;

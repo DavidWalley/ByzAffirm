@@ -1,6 +1,6 @@
 // ByzAgree.js
-// Asynchronous ByzAgree Fault Tolerant Network Scheme Test
-// (c)2018 David C. Walley
+// ByzAgree Async BFT Network Communications Scheme Test
+// Non-patented content (c)2018 David C. Walley, MIT license.
 
 var ByzNode = require("./ByzNode.js");
 var g = ByzNode.g;
@@ -29,7 +29,7 @@ ByzAgree.prototype._bRenew = function() {
   for (var i = 0; i < n; i++) {
     me._abyznode[i] = ByzNode.byznodeNEW(asNAMES[i], i, n);
   }
-  console.log("ByzAgree.byzagreeNEW");
+  console.log("--- ByzAgree.byzagreeNEW");
   return true;
 };
 
@@ -38,6 +38,8 @@ ByzAgree.prototype.Go = function() {
   var me = this;
   g.whenNowTo_ms(1000);
   me._abyznode[0].Create("Payload 1");
+  console.log("--- 0 Create Payload 1");
+  console.log("---");
   var n = me._abyznode.length;
   for (var i = 0; i < n; i++) {
     console.log(me._abyznode[i].s());

@@ -33,16 +33,23 @@ ByzAgree.prototype._bRenew = function() {
   return true;
 };
 
+// Display state of all nodes' logs and copies.
+ByzAgree.prototype._sListAllNodes = function() {
+  var me = this;
+  console.log("--- All:");
+  for (var i = 0; i < me._abyznodeAll.length; i++) {
+    console.log(me._abyznodeAll[i].s());
+  }
+  return true;
+};
+
 // Start a simulated run.
 ByzAgree.prototype.Go = function() {
   var me = this;
   g.whenNowTo_ms(1000);
   me._abyznodeAll[0].Create("Payload 1");
   console.log('--- Ann creates "Payload 1"');
-  console.log("--- All:");
-  for (var i = 0; i < me._abyznodeAll.length; i++) {
-    console.log(me._abyznodeAll[i].s());
-  }
+  me._sListAllNodes();
   return true;
 };
 

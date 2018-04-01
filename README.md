@@ -1,22 +1,21 @@
 # ByzAgree
 NOT Hashgraph (nor Blockchain) - Towards an Open Asynchronous Byzantine Fault Tolerant Consensus Algorithm
 
-Blockchain - the basic algorithm that BitCoin and related cryptocurrencies use, has a new challenger named Hashgraph. A coin, Hedera Hashgraph, has been announced by the Hedera governance council. While provably superior on many fronts to any blockchain variant including Etherium, many are rejecting Hashgraph because of the patents claimed by Swirlds and inventor Leemon Baird.
+**NOTE: There is no working code here.**
 
-**There is no working code here.**
+Blockchain - the basic algorithm that BitCoin and related cryptocurrencies use, has a new challenger named Hashgraph. A coin, Hedera Hashgraph, has been announced by the Hedera governance council. While provably superior on many fronts to any blockchain variant including Etherium, many are rejecting Hashgraph because of the patents claimed by Swirlds and inventor Leemon Baird.
 
 **IMPORTANT: I am not a lawyer and this code repository does not contain any valid legal advice. Any and all code to be added is meant for discussion of my thoughts and experiments only. As a non-lawyer, I cannot say if any or all of the code violates one or several patents, so do not execute, copy, use or incorporate any of this code in any project for any purpose whatsoever.**
 
-**One goal of this repo is to ask whether an alternative to Hashgraph would be subject to their patents or not. Therefore, I hereby put any original work or ideas of mine in this repo under the MIT license, but if you use anything covered by the Hashgraph patents, which I cannot advise you on, then obviously you have to contact Swirlds, the owner, to avoid infringement.**
+**I hereby put any original work or ideas of mine in this repo under the MIT license. One goal of this repo is to ask whether an alternative to Hashgraph would be subject to patent restrictions or not, so if you use anything here that is covered by the Hashgraph patents, which I cannot advise you on, then you must contact the owners to avoid infringement.**
 
-I understand Baird's actions - he has put considerable time, energy and genius into this work, and would like to make some money in return. He has had a flood of requests for a cyptocurrency, and is responding through his company, Swirlds, and its perpetual membership on the governance council. Hedera members will jointly run a Hashgraph-based network and coin, and will not allow a fork. All of this sounds good, but another way of saying it is - if they decide you are competing with their coin in any way they can enforce their patents and may shut you down.
+I understand Baird's actions - he has put considerable time, energy and genius into this work. He has had a flood of inquiries about a cyptocurrency, and is responding with Hedera. Hedera members will jointly govern and run a Hashgraph-based network and coin, and have promised not to allow a fork. All of this sounds good, but another way of saying it is - if they decide you are competing with their coin in any way they can enforce their patents and may shut you down.
 
-I don't want to get into the freedom/establishment/anarchy/bubble debate, because I don't begrudge Baird's efforts to make a buck. I congratulate him and thank him. I just wish there was an open source, provably 100% resolving Async BFT that I could use for my non-coin project.
+I don't want to get into the freedom/establishment/anarchy/bubble debates, because I don't begrudge Baird's efforts to make a buck. I congratulate him and thank him. I just wish there was an open source, provably 100% resolving Async BFT that I could use for my non-coin project.
 
-You may or may not want to create a coin. Maybe you want to create a game, or a fair on-line auction, or a notary service, or maybe you have a totally unique idea you aren't ready to talk about yet. You might be like me and would prefer not having to worry about some future risk of you or one of your users crossing some legal line. Whatever my reason for wanting open source, I wish Baird well, but have to fork from his path at this point.
+You may or may not want to create a coin. Maybe you want to create a game, or an on-line auction, or a notary service, or maybe you have a novel idea you cannot talk about yet. You might be like me and prefer not having to worry about the risk of you or a user crossing some legal line. Whatever my reason for wanting open source, I wish Baird well, but have to divert from his path at this point.
 
-I have two Questions and a Goal:
-
+## Two Questions and a Goal:
 (1) Are Baird's patents valid given his statements about Hashgraph? 
 
 (2) Is it possible to implement Async BFT some other way, without violating his patents?
@@ -27,8 +26,7 @@ I am not a lawyer, but am considering starting a crowd-funding project to get a 
 
 If you have ideas or code you would like to contribute, I can be contacted at dave at davidwalley.ca, but please keep in mind that I will use public domain and obvious ideas only, and I want to avoid being "poisoned" by any ideas that might infringe any patent or copyright claims of Hashgraph or anyone else.
 
-# Hashgraph's Foundations
-
+## Hashgraph's Foundations
 According to Baird, Hashgraph is based on: DAGs - directed acyclic graphs (the "graph" part of Hashgraph); the gossip communications scheme; Byzantine voting algorithms; and, super-efficient "gossip-about-gossip" that uses a "hash", and virtual voting.  Undoubtedly, there are many other details, but considering each:
 - DAG is a well-known mathematical abstraction studied by others working on Bitcoin-related solutions, and allows visualization of the order of communications in a computer network. It does not affect a network in any way -  it merely describes what is already happening.
 - The idea behind the gossip communications scheme can be summed up as "tell two friends, and they tell two friends, and so on, and so on".  This is a catchphrase of an old television commercial, and is well-known in computer networking.
@@ -45,7 +43,7 @@ A rewrite should not be anywhere near as difficult as the task that originally f
 
 He started with the admirable idea of mathematically proving the validity of every step. We don't need to prove anything - yet. We can test our solution (but not prove it) at every step.  If sufficient testing shows that a new solution gives the same results as Hashgraph, then it would definitely be worth proving it mathematically.
 
-# First Stab at Another Obvious Scheme
+## First Stab at Another Obvious Scheme
 - Look for network communications scheme giving consensus time to a message and its payload.
 - Each node keeps a time-ordered log of messages, and a copy of as much of every other node's log as known.
 - Messages are encrypted and signed (using any desired public/private key encryption algorithm) so that once created they cannot be altered or forged, and can be passed along without alteration.

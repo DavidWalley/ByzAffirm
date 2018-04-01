@@ -1,7 +1,7 @@
 # ByzAgree
 NOT Hashgraph (nor Blockchain) - Towards an Open Asynchronous Byzantine Fault Tolerant Consensus Algorithm
 
-**NOTE: There is no working code here.**
+**NOTE: There is no working code here, yet.**
 
 Blockchain - the basic algorithm that BitCoin and related cryptocurrencies use, has a new challenger named Hashgraph. A coin, Hedera Hashgraph, has been announced by the Hedera governance council. While provably superior on many fronts to any blockchain variant including Etherium, many are rejecting Hashgraph because of the patents claimed by Swirlds and inventor Leemon Baird.
 
@@ -20,37 +20,37 @@ You may or may not want to create a coin. Maybe you want to create a game, or an
 
 (2) Is it possible to implement Async BFT some other way, without violating his patents?
 
-(3) Write a working implementation of some other scheme using public information and obvious decisions only.
+(3) Write a working implementation of some other scheme using public information and obvious decisions only, so it can work around any patents.
 
 I am not a lawyer, but am considering starting a crowd-funding project to get a lawyer's opinion. I would like to lay-out some preliminary info which might be useful.
 
-If you have ideas or code you would like to contribute, I can be contacted at dave at davidwalley.ca, but please keep in mind that I will use public domain and obvious ideas only, and I want to avoid being "poisoned" by any ideas that might infringe any patent or copyright claims of Hashgraph or anyone else.
+If you have ideas or code you would like to contribute, I can be contacted at dave at davidwalley.ca, but please keep in mind that I will use public domain and obvious ideas only, as I want to avoid being "poisoned" by any patented ideas from Hashgraph or anywhere else.
 
 ## Hashgraph's Foundations
-According to Baird, Hashgraph is based on: DAGs - directed acyclic graphs (the "graph" part of Hashgraph); the gossip communications scheme; Byzantine voting algorithms; and, super-efficient "gossip-about-gossip" that uses a "hash", and virtual voting.  Undoubtedly, there are many other details, but considering each:
-- DAG is a well-known mathematical abstraction studied by others working on Bitcoin-related solutions, and allows visualization of the order of communications in a computer network. It does not affect a network in any way -  it merely describes what is already happening.
-- The idea behind the gossip communications scheme can be summed up as "tell two friends, and they tell two friends, and so on, and so on".  This is a catchphrase of an old television commercial, and is well-known in computer networking.
+According to Baird, Hashgraph is based on: Directed Acyclic Graphs (DAGs, the "graph" part of Hashgraph); gossip communications; Byzantine voting algorithms; super-efficient "gossip-about-gossip" that uses a "hash"; and, virtual voting. Undoubtedly, there are many other details, but considering each:
+- DAG is a well-known mathematical abstraction studied by others working on Bitcoin-related solutions, and allows visualization of the order of communications in a computer network. It does not affect a network in any way - it merely describes what is already happening.
+- The idea behind the gossip communications scheme can be summed up as "tell two friends, and they tell two friends, and so on, and so on". This is a catchphrase of an old television commercial, and is well-known in computer networking.
 - According to Baird, Byzantine voting algorithms are fully described in several 30 year-old patents.
 - Gossip-about-gossip is a radically efficient simplification which required genius insight, but is not necessary. According to Baird, his insight allows a history of communications (the DAG) to be reconstructed, which is an important result, while only requiring a very small additional overhead.
 - Hashing is a standard process used in programming.
 - Virtual Voting may be a key idea, but I think it is well understood, especially in political circles.
 
-I am certain that the information contained in a DAG can be communicated in some other, perhaps inefficient, way. Any other way would certainly be less brilliant, but does it matter? Hashgraph claims hundreds of transactions in a hundredth of a second.  Suppose it took 2 hundredths of a second - would anyone care? Perhaps industrial-scale use would require two computers to do what Hashgraph can do with one - does that matter in the context of a multi-million dollar opportunity?
+I am certain that the information contained in a DAG can be communicated in some other, perhaps inefficient, way. Any other way would certainly be less brilliant, but does it matter? Hashgraph claims hundreds of transactions in a hundredth of a second. Suppose it took 2 hundredths of a second - would anyone care? Perhaps industrial-scale use would require two computers to do what Hashgraph can do with one - does that matter in the context of a multi-million dollar opportunity?
 
 Writing any software is hard and details take time and effort, but I think it is possible to write a replacement for Hashgraph with no reference to the gossip-about-gossip idea, and everything else appears to this non-lawyer to be in the public domain.
 
-A rewrite should not be anywhere near as difficult as the task that originally faced Baird. For one thing, we know that at least one solution is possible. Where he looked when no working solution was known to exist, we look for a second.
+A rewrite should not be anywhere near as difficult as the task that originally faced Baird. For one thing, we know that one solution is possible. Where he started when no working solution was known to exist, we start with one example and look for a second. The legal issues may be more difficult than the programming.
 
-He started with the admirable idea of mathematically proving the validity of every step. We don't need to prove anything - yet. We can test our solution (but not prove it) at every step.  If sufficient testing shows that a new solution gives the same results as Hashgraph, then it would definitely be worth proving it mathematically.
+Baird started with the admirable idea of mathematically proving the validity of every step. We don't need to prove anything - yet. We can test our solution (but not prove it) at every step. If sufficient testing shows that a new solution gives the same results as Hashgraph, then it would definitely be worth proving it mathematically some day.
 
-## First Stab at Another Obvious Scheme
-- Look for network communications scheme giving consensus time to a message and its payload.
-- Each node keeps a time-ordered log of messages, and a copy of as much of every other node's log as known.
-- Messages are encrypted and signed (using any desired public/private key encryption algorithm) so that once created they cannot be altered or forged, and can be passed along without alteration.
+## First Stab at Some Other Obvious Scheme
+- Our goal is that all nodes on a network eventually settle on a consensus of when all data-payload containing messages first appeared (and most importantly, the consensus order of messages).
+- Each node keeps a time-ordered and stamped log of all messages received that might logically contain information useful in our goal, i.e., data payloads and times of reception.
+- Log entries are encrypted and signed immediately, so they can be passed along as is without fear of forgery or alteration.
 - Messages are passed around using a gossip protocol.
-- Log and time-stamp messages that have information that might be useful for reaching consensus using a patent-expired Byzantine Fault Tolerant scheme.
-- Compress logs by never duplicating information when a reference to info in some other log entry will do.
+- Each node actively reconstructs a copy of as much of every other node's log as possible.
+- Compress logs by not storing information that is not required to reach our goal.
+- Compress logs by not duplicating information when a reference to another log entry will do.
+- When queried, a node replies with the data-payload, its best estimate of when the message became well-known, and whether the node has enough information to confirm the ordering of the message or not, using Byzantine Fault Tolerant algorithms described in expired patents only.
 
-As my first task, I want to write a simple demo of the above. I won't be implementing a working version yet, just something to help visualize and verify how the scheme will work.
-
-
+As my first task, I want to write a simple demo of the above. I won't be implementing a working version yet, just something to help visualize and test how the scheme will work.

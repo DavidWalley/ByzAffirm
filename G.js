@@ -1,13 +1,14 @@
-var gFs3EsRwGHwq;
-// G - General Purpose JavaScript routines.
-// Super global, super dangerous, but super handy code conveniences.
+// G.js
+// General Purpose JavaScript routines. Global, polluting, but handy code conveniences.
 // (c)2018 David C. Walley
 
 // Class of super global, super dangerous, but super handy code conveniences.
 function G() {
+  // Private variables:
   this._whenFakeOffset;
 }
 
+// Factory constructor of instance of this class.
 G.gNEW = function() {
   var ob = new G;
   if (!ob._bRenew()) {
@@ -16,9 +17,9 @@ G.gNEW = function() {
   return ob;
 };
 
+// Initialize or reset object.
 G.prototype._bRenew = function() {
   var me = this;
-  // Initialize or reset the object.
   me._whenFakeOffset = 0;
   return true;
 };
@@ -65,7 +66,8 @@ G.prototype.whenNow_ms = function() {
   return Date.now() + me._whenFakeOffset;
 };
 
-// Modulus, fixes JavaScript's non-mathematical definition of modulus operation in negative numbers (which it confuses with a 'remainder').
+// Modulus, fixes JavaScript's non-mathematical definition of modulus operation in negative numbers
+// (which it confuses with a 'remainder').
 G.dMOD = function(a_n, a_m) {
   return (a_n % a_m + a_m) % a_m;
 };
@@ -82,8 +84,7 @@ G.sFORM = function(a_d, a_nLength, a_nDecimals) {
     iDot = s.indexOf(".");
   }
   s += "0000000000000000";
-  var n = s.length;
-  s = s.slice(iDot - (a_nLength - a_nDecimals) + 1, n);
+  s = s.slice(iDot - (a_nLength - a_nDecimals) + 1, s.length);
   s = s.slice(0, a_nLength);
   return s;
 };
@@ -107,15 +108,15 @@ G.sFIX = function(a_v, a_sDefault) {
   return a_sDefault;
 };
 
+exports.g = G.gNEW();
+exports.gNEW = G.gNEW;
 exports.bIS = G.bIS;
 exports.bNO = G.bNO;
 exports.whenNow_s = G.prototype.whenNow_s;
+exports.whenNowTo_ms = G.prototype.whenNowTo_ms;
 exports.whenNow_ms = G.prototype.whenNow_ms;
 exports.dMOD = G.dMOD;
 exports.sFORM = G.sFORM;
 exports.dFIX = G.dFIX;
 exports.sFIX = G.sFIX;
-
-// Create a global instance of the above class.
-var g = G.gNEW();
 

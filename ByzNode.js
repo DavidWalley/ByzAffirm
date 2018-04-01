@@ -1,10 +1,12 @@
-// ByzNode - ByzAgree Node
+// ByzNode.js
+// ByzAgree Network Node
 // (c)2018 David C. Walley
 
-var g = require("./G.js");
+var g = require("./G.js").g;
 
-// ByzAgree node class.
+// ByzAgree network node class.
 function ByzNode() {
+  // Private variables:
   this._sName;
   this._iWhich;
   this._nNodes;
@@ -13,6 +15,7 @@ function ByzNode() {
   this._a2sLetter;
 }
 
+// Factory constructor of instance of this class.
 ByzNode.byznodeNEW = function(a_sName, a_iWhich, a_nNodes) {
   var ob = new ByzNode;
   if (!ob._bRenew(a_sName, a_iWhich, a_nNodes)) {
@@ -21,9 +24,9 @@ ByzNode.byznodeNEW = function(a_sName, a_iWhich, a_nNodes) {
   return ob;
 };
 
+// Initialize or reset object.
 ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   var me = this;
-  // Initialize or reset the object.
   me._sName = a_sName;
   me._iWhich = a_iWhich;
   me._nNodes = a_nNodes;
@@ -52,14 +55,30 @@ ByzNode.prototype.Create = function(a_sData) {
 // Encrypt and sign a message.
 ByzNode.prototype._sSeal = function(a_i, a_sData, a_when) {
   var me = this;
-  return "(" + me._iWhich + ":" + a_i + ',"' + a_sData + '",' + a_when + ")" + me._sName;
+  return "(" + a_when + "," + a_sData + ")" + me._sName;
 };
 
 // Report current state (for debug mostly).
 ByzNode.prototype.s = function() {
   var me = this;
-  return me._sName + " " + "TODO";
+  var r_s = me._sName;
+  var n = me._a2sData.length;
+  var m;
+  var j;
+  for (var i = 0; i < n; i++) {
+    r_s += "\n" + "    " + i + "=" + ["a", "b", "c", "d", "e", "f"][i] + "/";
+    m = me._a2sData[i].length;
+    if (0 < m) {
+      for (j = 0; j < m; j++) {
+        r_s += "\n      " + me._a2when[i][j];
+        r_s += "," + me._a2sData[i][j];
+        r_s += "," + me._a2sLetter[i][j];
+      }
+    }
+  }
+  return r_s;
 };
 
-module.exports.byznodeNEW = ByzNode.byznodeNEW;
+exports.byznodeNEW = ByzNode.byznodeNEW;
+exports.g = g;
 

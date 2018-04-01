@@ -8,7 +8,7 @@ var g = ByzNode.g;
 // BFT test/demo class.
 function ByzAgree() {
   // Private variables:
-  this._abyznode;
+  this._abyznodeAll;
 }
 
 // Factory constructor of instance of this class.
@@ -23,13 +23,13 @@ ByzAgree.byzagreeNEW = function() {
 // Initialize or reset object.
 ByzAgree.prototype._bRenew = function() {
   var me = this;
-  me._abyznode = [];
+  me._abyznodeAll = [];
   var asNAMES = ["ann", "bob", "cam", "dan", "eve"];
   var n = asNAMES.length;
   for (var i = 0; i < n; i++) {
-    me._abyznode[i] = ByzNode.byznodeNEW(asNAMES[i], i, n);
+    me._abyznodeAll[i] = ByzNode.byznodeNEW(asNAMES[i], i, n);
   }
-  console.log("--- ByzAgree.byzagreeNEW");
+  console.log("--- ByzAgree starts.");
   return true;
 };
 
@@ -37,12 +37,11 @@ ByzAgree.prototype._bRenew = function() {
 ByzAgree.prototype.Go = function() {
   var me = this;
   g.whenNowTo_ms(1000);
-  me._abyznode[0].Create("Payload 1");
-  console.log("--- 0 Create Payload 1");
-  console.log("---");
-  var n = me._abyznode.length;
-  for (var i = 0; i < n; i++) {
-    console.log(me._abyznode[i].s());
+  me._abyznodeAll[0].Create("Payload 1");
+  console.log('--- Ann creates "Payload 1"');
+  console.log("--- All:");
+  for (var i = 0; i < me._abyznodeAll.length; i++) {
+    console.log(me._abyznodeAll[i].s());
   }
   return true;
 };

@@ -53,7 +53,7 @@ ByzNode.prototype.Create = function(a_sData) {
   return true;
 };
 
-// Encrypt and sign a message.
+// Encrypt and sign a message (or at least fake it for display and testing).
 ByzNode.prototype._sSeal = function(a_i, a_sData, a_when) {
   var me = this;
   var s = a_when + "," + a_sData;

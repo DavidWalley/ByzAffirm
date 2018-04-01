@@ -45,9 +45,9 @@ Baird started with the admirable idea of mathematically proving the validity of 
 
 ## First Stab at Some Other Obvious Scheme
 - Our goal is that all nodes on a network eventually settle on a consensus of when all data-payload containing messages first appeared (and most importantly, the consensus order of messages).
-- Each node keeps a time-ordered and stamped log of all messages received that might logically contain information useful in our goal, i.e., data payloads and times of reception.
-- Log entries are encrypted and signed immediately, so they can be passed along as is without fear of forgery or alteration.
-- Messages are passed around using a gossip protocol.
+- Each node keeps a time-ordered and time-stamped log of all messages received that might logically contain information useful in our goal, i.e., data-payloads and times of reception.
+- Log entries are encrypted and signed immediately (using any good public/private key cryptographic protocol), so they can be passed along further without alteration or fear of alteration or forgery.
+- Messages are passed around using gossip protocol.
 - Each node actively reconstructs a copy of as much of every other node's log as possible.
 - Compress logs by not storing information that is not required to reach our goal.
 - Compress logs by not duplicating information when a reference to another log entry will do.

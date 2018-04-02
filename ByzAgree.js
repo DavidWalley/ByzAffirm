@@ -3,7 +3,9 @@
 // Non-patented content (c)2018 David C. Walley, MIT license.
 
 var ByzNode = require("./ByzNode.js");
-var g = ByzNode.g;
+var G = require("./G.js");
+var g = G.g;
+
 
 // BFT test/demo class.
 function ByzAgree() {
@@ -34,11 +36,11 @@ ByzAgree.prototype._bRenew = function() {
 };
 
 // Display state of all nodes' logs and copies.
-ByzAgree.prototype._sListAllNodes = function() {
+ByzAgree.prototype._bListAllNodes = function() {
   var me = this;
   console.log("--- All:");
   for (var i = 0; i < me._abyznodeAll.length; i++) {
-    console.log(me._abyznodeAll[i].s());
+    console.log(" -" + me._abyznodeAll[i].sListLogs());
   }
   return true;
 };
@@ -46,10 +48,26 @@ ByzAgree.prototype._sListAllNodes = function() {
 // Start a simulated run.
 ByzAgree.prototype.Go = function() {
   var me = this;
-  g.whenNowTo_ms(1000);
-  me._abyznodeAll[0].Create("Payload 1");
-  console.log('--- Ann creates "Payload 1"');
-  me._sListAllNodes();
+  var s = "";
+  var t = "";
+  var ANN = 0;
+  var BOB = 1;
+  var CAM = 2;
+  var DAN = 3;
+  var EVE = 4;
+  g.whenNowTo_ms(1500);
+  me._abyznodeAll[ANN].Create("HEY1");
+  console.log('--- Ann creates "HEY1"');
+  me._bListAllNodes();
+  me._abyznodeAll[ANN].Create("HEY2");
+  console.log('--- Ann creates "HEY2"');
+  me._bListAllNodes();
+  s = me._abyznodeAll[BOB].sLogsSizes();
+  console.log("--- Bob tells Ann ~" + s);
+  t = me._abyznodeAll[ANN].sNeeds(s);
+  console.log("--- Ann sends Bob !" + t);
+  me._abyznodeAll[BOB].Hark(t);
+  me._bListAllNodes();
   return true;
 };
 

@@ -46,7 +46,7 @@ A rewrite should not be anywhere near as difficult as the task that originally f
 Baird started with the admirable idea of mathematically proving the validity of every step. We don't need to prove anything - yet. We can test our solution (but not prove it) at every step. If sufficient testing shows that a new solution gives the same results as Hashgraph, then it would definitely be worth proving it mathematically some day.
 
 ## First Stab at Some Other Obvious Scheme
-I think the following are reasonably obvious:
+I think the following are reasonably obvious to a programmer skilled in the art:
 - Our goal is that all nodes on a network eventually settle on a consensus of when all data-payload containing messages first appeared (and most importantly, the consensus order of messages).
 - Each node keeps a time-ordered and time-stamped log of all received messages that might logically contain information useful in our goal, i.e., data-payloads and times of reception.
 - Log entries are encrypted and signed immediately (using any good public/private key cryptographic protocol), so they can be passed along further without alteration or fear of alteration or forgery.

@@ -36,7 +36,7 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   return true;
 };
 
-// Create item in own log.
+// Create item with data-payload in own log.
 ByzNode.prototype.Create = function(a_sData) {
   var me = this;
   var when = g.whenNow_ms();
@@ -91,13 +91,15 @@ ByzNode.prototype.sNeeds = function(a_sLogSizesOfOtherNode) {
 ByzNode.prototype.Hark = function(a_sSackOfLetters) {
   var me = this;
   console.log("--- " + me._sName + ".Hark(" + a_sSackOfLetters + ").");
+  var s = "";
   var asLetter = a_sSackOfLetters.split("+");
   var n = asLetter.length;
-  var s = "";
   for (var i = 1; i < n; i++) {
     s += me._sHark_Open(asLetter[i].trim());
   }
-  me.Create(s);
+  if ("" !== s) {
+    me.Create(s);
+  }
   return true;
 };
 
@@ -120,6 +122,11 @@ ByzNode.prototype._sHark_Open = function(a_sLetter) {
     return "";
   }
   me._a2sLetter[iLetterCreator][iLetterLogAt] = a_sLetter;
+  if ("^" === sLetterData[0]) {
+    console.log(me._sName + "3 _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
+    return "";
+  }
+  console.log(me._sName + "4 _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
   return "^" + "abcde"[iLetterCreator] + iLetterLogAt;
 };
 

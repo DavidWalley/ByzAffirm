@@ -78,7 +78,7 @@ ByzNode.prototype.sNeeds = function(a_sLogSizesOfOtherNode) {
   var iOtherNodeAt = 0;
   var iIAmAt = 0;
   for (var i = 0; i < as.length; i++) {
-    iOtherNodeAt = parseInt(as, 10);
+    iOtherNodeAt = parseInt(as[i], 10);
     iIAmAt = me._a2sLetter[i].length;
     for (var j = iOtherNodeAt; j < iIAmAt; j++) {
       r_s += " + " + me._a2sLetter[i][j];
@@ -90,7 +90,7 @@ ByzNode.prototype.sNeeds = function(a_sLogSizesOfOtherNode) {
 // Process all important incoming message.
 ByzNode.prototype.Hark = function(a_sSackOfLetters) {
   var me = this;
-  console.log("--- Hark: >>" + a_sSackOfLetters + "<<");
+  console.log("--- " + me._sName + ".Hark(" + a_sSackOfLetters + ").");
   var asLetter = a_sSackOfLetters.split("+");
   var n = asLetter.length;
   var s = "";

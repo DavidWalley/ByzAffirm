@@ -1,6 +1,6 @@
 // G.js
 // General Purpose JavaScript routines. Global, polluting, but handy code conveniences.
-// Non-patented content (c)2018 David C. Walley, MIT license.
+// (c)2018 David C. Walley, MIT license.
 
 // Class of super global, super dangerous, but super handy code conveniences.
 function G() {
@@ -76,6 +76,12 @@ G.prototype.whenNowTo_ms = function(a_whenNow_ms) {
 G.prototype.whenNow_ms = function() {
   var me = this;
   return Date.now() + me._whenFakeOffset;
+};
+
+// Generate a random number from 0 to 1.
+G.prototype.dRANDOM = function(a_nMin, a_nMax) {
+  var me = this;
+  return a_nMin + (a_nMax - a_nMin) * Math.random();
 };
 
 // Modulus, fixes JavaScript's non-mathematical definition of modulus operation in negative numbers

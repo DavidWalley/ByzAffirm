@@ -5,13 +5,15 @@
 var G = require("./G.js");
 var g = G.g;
 
+var g_asNODES = ["localhost/byzagree_1", "localhost/byzagree_2", "localhost/byzagree_3"];
 // ByzAgree network node class.
 function ByzNode() {
   // Private variables:
   this._sName;
   this._iWhich;
+  this._iNodeNext;
   this._nNodes;
-  this._a2sLetter;
+  this._a2sLogs;
 }
 
 // Factory constructor of instance of this class.
@@ -28,11 +30,36 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   var me = this;
   me._sName = a_sName;
   me._iWhich = a_iWhich;
+  me._iNodeNext = a_iWhich;
   me._nNodes = a_nNodes;
-  me._a2sLetter = [];
+  me._a2sLogs = [];
   for (var i = 0; i < a_nNodes; i++) {
-    me._a2sLetter[i] = [];
+    me._a2sLogs[i] = [];
   }
+  return true;
+};
+
+// Do a step in the algorithm.
+ByzNode.prototype.DoSomething = function() {
+  var me = this;
+  do {
+    me._iNodeNext = G.dMOD(me._iNodeNext + 1, me._nNodes);
+  } while (me._iNodeNext === me._iWhich);
+  me._AskAnotherNode(me._iNodeNext, me.sLogsSizes());
+  return true;
+};
+
+
+ByzNode.prototype._AskAnotherNode = function(a_iTo, a_sData) {
+  var me = this;
+  var iTo = a_iTo;
+  return true;
+};
+
+
+ByzNode.prototype._Hark = function(a_response) {
+  var me = this;
+  console.log(a_response);
   return true;
 };
 
@@ -40,8 +67,8 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
 ByzNode.prototype.Create = function(a_sData) {
   var me = this;
   var when = g.whenNow_ms();
-  var i = me._a2sLetter[me._iWhich].length;
-  me._a2sLetter[me._iWhich].push(me._sSealAndSign(i, a_sData, when));
+  var i = me._a2sLogs[me._iWhich].length;
+  me._a2sLogs[me._iWhich].push(me._sSealAndSign(i, a_sData, when));
   return true;
 };
 
@@ -56,9 +83,9 @@ ByzNode.prototype._sSealAndSign = function(a_i, a_sData, a_when) {
 ByzNode.prototype.sLogsSizes = function() {
   var me = this;
   var r_s = "" + me._iWhich;
-  var n = me._a2sLetter.length;
+  var n = me._a2sLogs.length;
   for (var i = 0; i < n; i++) {
-    r_s += (0 === i ? "[" : ",") + me._a2sLetter[i].length;
+    r_s += (0 === i ? "[" : ",") + me._a2sLogs[i].length;
   }
   r_s += "]";
   return r_s;
@@ -79,9 +106,9 @@ ByzNode.prototype.sNeeds = function(a_sLogSizesOfOtherNode) {
   var iIAmAt = 0;
   for (var i = 0; i < as.length; i++) {
     iOtherNodeAt = parseInt(as[i], 10);
-    iIAmAt = me._a2sLetter[i].length;
+    iIAmAt = me._a2sLogs[i].length;
     for (var j = iOtherNodeAt; j < iIAmAt; j++) {
-      r_s += " + " + me._a2sLetter[i][j];
+      r_s += " + " + me._a2sLogs[i][j];
     }
   }
   return r_s;
@@ -121,7 +148,7 @@ ByzNode.prototype._sHark_Open = function(a_sLetter) {
     console.log("Bad message!!!");
     return "";
   }
-  me._a2sLetter[iLetterCreator][iLetterLogAt] = a_sLetter;
+  me._a2sLogs[iLetterCreator][iLetterLogAt] = a_sLetter;
   if ("^" === sLetterData[0]) {
     console.log(me._sName + "3 _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
     return "";
@@ -131,18 +158,18 @@ ByzNode.prototype._sHark_Open = function(a_sLetter) {
 };
 
 // Report everything this node knows (for debug mostly).
-ByzNode.prototype.sListLogs = function() {
+ByzNode.prototype.sListMyLogs = function() {
   var me = this;
   var r_s = me._sName;
-  var n = me._a2sLetter.length;
+  var n = me._a2sLogs.length;
   var m;
   var j;
   for (var i = 0; i < n; i++) {
     r_s += "\n   " + "abcdef"[i] + ":";
-    m = me._a2sLetter[i].length;
+    m = me._a2sLogs[i].length;
     if (0 < m) {
       for (j = 0; j < m; j++) {
-        r_s += " " + j + "<" + me._a2sLetter[i][j] + ">";
+        r_s += " " + j + "<" + me._a2sLogs[i][j] + ">";
       }
     }
   }

@@ -2,7 +2,7 @@
 // General Purpose JavaScript routines. Global, polluting, but handy code conveniences.
 // (c)2018 David C. Walley, MIT license.
 
-// Class of super global, super dangerous, but super handy code conveniences.
+// Class of super global, super naughty, but super handy code conveniences.
 function G() {
   // Private variables:
   this._whenFakeOffset;
@@ -26,7 +26,7 @@ G.prototype._bRenew = function() {
 
 G.sVERSION = "DEV";
 
-// Set start-up procedure to run when document is ready.
+// Set start-up procedure to run when document object model (DOM) is ready (for running in a browser).
 G.ONrEADY = function(a_f) {
   return true;
 };
@@ -53,7 +53,7 @@ G.bNO = function(a_v) {
   return "undefined" === typeof a_v;
 };
 
-// Better type checker.
+// Improved type checker (better than built-in methods).
 G.sTYPE = function(a_v) {
   var s = Function.prototype.toString.call(a_v.constructor);
   return s.match(/function (.*)\(/)[1];
@@ -65,7 +65,7 @@ G.prototype.whenNow_s = function() {
   return Math.floor(me.whenNow_ms() * 0.001);
 };
 
-// Set a time offset (for debugging mostly).
+// Set a time offset by giving what should be the current time (for debugging mostly).
 G.prototype.whenNowTo_ms = function(a_whenNow_ms) {
   var me = this;
   me._whenFakeOffset = a_whenNow_ms - Date.now();
@@ -78,9 +78,8 @@ G.prototype.whenNow_ms = function() {
   return Date.now() + me._whenFakeOffset;
 };
 
-// Generate a random number from 0 to 1.
-G.prototype.dRANDOM = function(a_nMin, a_nMax) {
-  var me = this;
+// Generate a random number within a given range.
+G.dRANDOM = function(a_nMin, a_nMax) {
   return a_nMin + (a_nMax - a_nMin) * Math.random();
 };
 

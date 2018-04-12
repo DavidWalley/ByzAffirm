@@ -5,7 +5,6 @@
 var G = require("./G.js");
 var g = G.g;
 
-var g_asNODES = ["localhost/byzagree_1", "localhost/byzagree_2", "localhost/byzagree_3"];
 // ByzAgree network node class.
 function ByzNode() {
   // Private variables:
@@ -49,14 +48,14 @@ ByzNode.prototype.DoSomething = function() {
   return true;
 };
 
-
+// Prompt another (random) node to update us.
 ByzNode.prototype._AskAnotherNode = function(a_iTo, a_sData) {
   var me = this;
   var iTo = a_iTo;
   return true;
 };
 
-
+// Process response from prompting another node.
 ByzNode.prototype._Hark = function(a_response) {
   var me = this;
   console.log(a_response);
@@ -160,7 +159,7 @@ ByzNode.prototype._sHark_Open = function(a_sLetter) {
 // Report everything this node knows (for debug mostly).
 ByzNode.prototype.sListMyLogs = function() {
   var me = this;
-  var r_s = me._sName;
+  var r_s = "**" + me._sName;
   var n = me._a2sLogs.length;
   var m;
   var j;

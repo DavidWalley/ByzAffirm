@@ -5,7 +5,7 @@
 var G = require("./G.js");
 var g = G.g;
 
-// ByzAgree network node class.
+// ByzAgree network node class constructor.
 function ByzNode() {
   // Private variables:
   this._sName;
@@ -31,6 +31,7 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   me._iWhich = a_iWhich;
   me._iNodeNext = a_iWhich;
   me._nNodes = a_nNodes;
+  
   me._a2sLogs = [];
   for (var i = 0; i < a_nNodes; i++) {
     me._a2sLogs[i] = [];
@@ -44,6 +45,7 @@ ByzNode.prototype.DoSomething = function() {
   do {
     me._iNodeNext = G.dMOD(me._iNodeNext + 1, me._nNodes);
   } while (me._iNodeNext === me._iWhich);
+  
   me._AskAnotherNode(me._iNodeNext, me.sLogsSizes());
   return true;
 };
@@ -100,6 +102,7 @@ ByzNode.prototype.sNeeds = function(a_sLogSizesOfOtherNode) {
     console.log("Oops:" + JSON.stringify(as));
     return "Error";
   }
+  
   as = as[1].split(",");
   var iOtherNodeAt = 0;
   var iIAmAt = 0;
@@ -110,19 +113,22 @@ ByzNode.prototype.sNeeds = function(a_sLogSizesOfOtherNode) {
       r_s += " + " + me._a2sLogs[i][j];
     }
   }
+  
   return r_s;
 };
 
-// Process all important incoming message.
+// Process all important incoming messages.
 ByzNode.prototype.Hark = function(a_sSackOfLetters) {
   var me = this;
   console.log("--- " + me._sName + ".Hark(" + a_sSackOfLetters + ").");
   var s = "";
   var asLetter = a_sSackOfLetters.split("+");
+  
   var n = asLetter.length;
   for (var i = 1; i < n; i++) {
     s += me._sHark_Open(asLetter[i].trim());
   }
+  
   if ("" !== s) {
     me.Create(s);
   }
@@ -147,11 +153,14 @@ ByzNode.prototype._sHark_Open = function(a_sLetter) {
     console.log("Bad message!!!");
     return "";
   }
+  
   me._a2sLogs[iLetterCreator][iLetterLogAt] = a_sLetter;
+  
   if ("^" === sLetterData[0]) {
     console.log(me._sName + "3 _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
     return "";
   }
+  
   console.log(me._sName + "4 _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
   return "^" + "abcde"[iLetterCreator] + iLetterLogAt;
 };
@@ -163,6 +172,7 @@ ByzNode.prototype.sListMyLogs = function() {
   var n = me._a2sLogs.length;
   var m;
   var j;
+  
   for (var i = 0; i < n; i++) {
     r_s += "\n   " + "abcdef"[i] + ":";
     m = me._a2sLogs[i].length;
@@ -172,6 +182,7 @@ ByzNode.prototype.sListMyLogs = function() {
       }
     }
   }
+  
   return r_s;
 };
 

@@ -2,6 +2,7 @@
 // Setup and run test on local ByzAgree nodes.
 // (c)2018 David C. Walley, MIT license.
 
+console.log("ByzTest NODE");
 var NodeServer = require("./NodeServer.js");
 if ("undefined" === typeof g) {
   var G = require("./G.js");
@@ -31,8 +32,10 @@ ByzTest.prototype._bRenew = function(a_asNodeNames) {
   for (var i = 0; i < n; i++) {
     me._anodeserverAll[i] = NodeServer.nodeserverNEW(a_asNodeNames[i], i, n);
   }
+  
   console.log("-0-- Start All.");
   me.ConsoleShow();
+  
   return true;
 };
 

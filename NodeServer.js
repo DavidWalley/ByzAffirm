@@ -98,7 +98,7 @@ NodeServer.prototype.HandleRequest = function(a_request, a_response) {
 // Make a call to a server on localhost.
 NodeServer.prototype.MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
   var me = this;
-  var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, headers:{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_response) {
+  var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_response) {
     a_response.on("data", function(a_chunk) {
       console.log("--response:>" + a_chunk.toString() + "<.");
     });

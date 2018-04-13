@@ -4,6 +4,8 @@
 
 var G = require("./G.js");
 var g = G.g;
+var ByzCrypto = require("./ByzCrypto.js");
+var byzcrypto;
 
 // ByzAgree network node class constructor.
 function ByzNode() {
@@ -12,6 +14,7 @@ function ByzNode() {
   this._iWhich;
   this._iNodeNext;
   this._nNodes;
+  this._byzcrypto;
   this._a2sLogs;
 }
 
@@ -31,6 +34,7 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   me._iWhich = a_iWhich;
   me._iNodeNext = a_iWhich;
   me._nNodes = a_nNodes;
+  me._byzcrypto = ByzCrypto.byzcryptoNEW(me._iWhich, me._nNodes);
   
   me._a2sLogs = [];
   for (var i = 0; i < a_nNodes; i++) {
@@ -77,7 +81,8 @@ ByzNode.prototype.Create = function(a_sData) {
 ByzNode.prototype._sSealAndSign = function(a_i, a_sData, a_when) {
   var me = this;
   var s = me._iWhich + "," + a_i + "," + a_when + ',"' + a_sData + '"';
-  return me._sName + "{#" + G.sHASH(s) + "," + s + "}";
+  var sEncrypted = me._byzcrypto.sEncrypt(s);
+  return me._sName + "{" + s + ", " + sEncrypted + " }";
 };
 
 // Create a message to report sizes of all logs kept by this node, for telling another node about extent of what is known.
@@ -178,7 +183,7 @@ ByzNode.prototype.sListMyLogs = function() {
     m = me._a2sLogs[i].length;
     if (0 < m) {
       for (j = 0; j < m; j++) {
-        r_s += " " + j + "<" + me._a2sLogs[i][j] + ">";
+        r_s += " " + j + "{" + G.sSHRINK(me._a2sLogs[i][j]) + "}";
       }
     }
   }

@@ -125,16 +125,37 @@ G.sFIX = function(a_v, a_sDefault) {
   return a_sDefault;
 };
 
+// Collapse long text strings.
+G.sSHRINK = function(a_s) {
+  if (a_s.length < 96) {
+    return a_s;
+  }
+  var r_s = "";
+  var as = a_s.split(" ");
+  var n = as.length;
+  for (var i = 0; i < n; i++) {
+    if (as[i].length < 40) {
+      r_s += " " + as[i];
+    } else {
+      r_s += " " + as[i].slice(0, 10) + "..." + as[i].slice(-5);
+    }
+  }
+  return r_s;
+};
+
 exports.g = G.gNEW();
 exports.gNEW = G.gNEW;
 exports.sHASH = G.sHASH;
 exports.bIS = G.bIS;
 exports.bNO = G.bNO;
+exports.sTYPE = G.sTYPE;
 exports.whenNow_s = G.prototype.whenNow_s;
 exports.whenNowTo_ms = G.prototype.whenNowTo_ms;
 exports.whenNow_ms = G.prototype.whenNow_ms;
+exports.dRANDOM = G.dRANDOM;
 exports.dMOD = G.dMOD;
 exports.sFORM = G.sFORM;
 exports.dFIX = G.dFIX;
 exports.sFIX = G.sFIX;
+exports.sSHRINK = G.sSHRINK;
 

@@ -35,6 +35,9 @@ ByzTest.prototype._bRenew = function(a_asNodeNames) {
   
   console.log("-0-- Start All.");
   me.ConsoleShow();
+  me._anodeserverAll[0].Create("Hello1");
+  console.log('-1-- Ann created "Hello1".');
+  me.ConsoleShow();
   
   return true;
 };

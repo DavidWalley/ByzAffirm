@@ -42,12 +42,12 @@ ByzTest.prototype._bRenew = function(a_asNodeNames) {
   return true;
 };
 
-
+// Display this node's copy of the logs.
 ByzTest.prototype.ConsoleShow = function() {
   var me = this;
   var n = me._anodeserverAll.length;
   for (var i = 0; i < n; i++) {
-    console.log(me._anodeserverAll[i].sListMyLogs());
+    console.log(me._anodeserverAll[i].sIKnowAbout());
   }
   return true;
 };

@@ -50,7 +50,7 @@ ByzNode.prototype.DoSomething = function() {
     me._iNodeNext = G.dMOD(me._iNodeNext + 1, me._nNodes);
   } while (me._iNodeNext === me._iWhich);
   
-  me._AskAnotherNode(me._iNodeNext, me.sLogsSizes());
+  me._AskAnotherNode(me._iNodeNext, me.sIKnowAbout());
   return true;
 };
 
@@ -62,9 +62,9 @@ ByzNode.prototype._AskAnotherNode = function(a_iTo, a_sData) {
 };
 
 // Process response from prompting another node.
-ByzNode.prototype._Hark = function(a_response) {
+ByzNode.prototype._Hark = function(a_httpresponse) {
   var me = this;
-  console.log(a_response);
+  console.log(a_httpresponse);
   return true;
 };
 
@@ -86,7 +86,7 @@ ByzNode.prototype._sSealAndSign = function(a_i, a_sData, a_when) {
 };
 
 // Create a message to report sizes of all logs kept by this node, for telling another node about extent of what is known.
-ByzNode.prototype.sLogsSizes = function() {
+ByzNode.prototype.sIKnowAbout = function() {
   var me = this;
   var r_s = "" + me._iWhich;
   var n = me._a2sLogs.length;
@@ -94,6 +94,27 @@ ByzNode.prototype.sLogsSizes = function() {
     r_s += (0 === i ? "[" : ",") + me._a2sLogs[i].length;
   }
   r_s += "]";
+  return r_s;
+};
+
+// Report everything this node knows (for debug mostly).
+ByzNode.prototype.sListMyLogs = function() {
+  var me = this;
+  var r_s = "**" + me._sName;
+  var n = me._a2sLogs.length;
+  var m;
+  var j;
+  
+  for (var i = 0; i < n; i++) {
+    r_s += "\n   " + "abcdef"[i] + ":";
+    m = me._a2sLogs[i].length;
+    if (0 < m) {
+      for (j = 0; j < m; j++) {
+        r_s += " " + j + "{" + G.sSHRINK(me._a2sLogs[i][j]) + "}";
+      }
+    }
+  }
+  
   return r_s;
 };
 
@@ -168,27 +189,6 @@ ByzNode.prototype._sHark_Open = function(a_sLetter) {
   
   console.log(me._sName + "4 _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
   return "^" + "abcde"[iLetterCreator] + iLetterLogAt;
-};
-
-// Report everything this node knows (for debug mostly).
-ByzNode.prototype.sListMyLogs = function() {
-  var me = this;
-  var r_s = "**" + me._sName;
-  var n = me._a2sLogs.length;
-  var m;
-  var j;
-  
-  for (var i = 0; i < n; i++) {
-    r_s += "\n   " + "abcdef"[i] + ":";
-    m = me._a2sLogs[i].length;
-    if (0 < m) {
-      for (j = 0; j < m; j++) {
-        r_s += " " + j + "{" + G.sSHRINK(me._a2sLogs[i][j]) + "}";
-      }
-    }
-  }
-  
-  return r_s;
 };
 
 exports.byznodeNEW = ByzNode.byznodeNEW;

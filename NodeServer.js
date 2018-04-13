@@ -15,7 +15,7 @@ function NodeServer() {
   // Private variables:
   this._isPort;
   this._nNodes;
-  this._server;
+  this._httpserver;
   this._byznode;
 }
 
@@ -31,14 +31,14 @@ NodeServer.nodeserverNEW = function(a_sName, a_iWhich, a_nNodes) {
 // Initialize or reset object.
 NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   var me = this;
-  me._isPort = 8080 + a_iWhich;
+  me._isPort = NodeServer.nROOTpORT + a_iWhich;
   me._nNodes = a_nNodes;
   me._byznode = ByzNode.byznodeNEW(a_sName, a_iWhich, a_nNodes);
   
-  me._server = g_http.createServer(function(a, b) {
+  me._httpserver = g_http.createServer(function(a, b) {
     me.HandleRequest(a, b);
   });
-  me._server.listen(me._isPort, function() {
+  me._httpserver.listen(me._isPort, function() {
     console.log("Server started on: http://localhost:" + me._isPort);
   });
   
@@ -49,6 +49,7 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   return true;
 };
 
+NodeServer.nROOTpORT = 8080;
 // Wrapper for creating a new log item.
 NodeServer.prototype.Create = function(a_sData) {
   var me = this;
@@ -56,48 +57,51 @@ NodeServer.prototype.Create = function(a_sData) {
 };
 
 // Wrapper for reporting a text representation of the message logs of this server.
-NodeServer.prototype.sListMyLogs = function() {
+NodeServer.prototype.sIKnowAbout = function() {
   var me = this;
-  return me._byznode.sListMyLogs();
+  return me._byznode.sIKnowAbout();
 };
 
 // PERIODIC:
 NodeServer.prototype.ONtICK = function() {
   var me = this;
   console.log("ONtICK " + me._isPort);
-  var n = G.dRANDOM(0, me._nNodes);
-  me.MakeRequest("localhost", "/?ihave", 8080, me._byznode.sLogsSizes());
+  var n = 0;
+  do {
+    n = Math.floor(G.dRANDOM(0, me._nNodes)) + NodeServer.nROOTpORT;
+  } while (n === me._isPort);
+  me.MakeRequest("localhost", "/?igot", n, me._byznode.sIKnowAbout());
   return true;
 };
 
 // SERVER:
 // Server's request handler - decode request and send response.
-NodeServer.prototype.HandleRequest = function(a_request, a_response) {
+NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
   var me = this;
-  if ("/?kill" === a_request.url) {
-    a_response.end("Server " + me._isPort + " die.");
-    a_response.end();
-    a_request.connection.end();
-    a_request.connection.destroy;
-    me._server.close();
+  if ("/?kill" === a_httprequest.url) {
+    a_httpresponse.end("Server " + me._isPort + " die.");
+    a_httpresponse.end();
+    a_httprequest.connection.end();
+    a_httprequest.connection.destroy;
+    me._httpserver.close();
   }
   
-  if ("POST" !== a_request.method) {
-    a_response.end("");
-    return;
+  if ("POST" !== a_httprequest.method) {
+    a_httpresponse.end("");
+    return false;
   }
   
   var s = "";
-  a_request.on("data", function(a_s) {
+  a_httprequest.on("data", function(a_s) {
     s += a_s;
     if (1000000 < s.length) {
-      a_request.connection.destroy();
+      a_httprequest.connection.destroy();
     }
   });
   
-  a_request.on("end", function() {
+  a_httprequest.on("end", function() {
     var s0 = me.sHandleRequest_Posted(s);
-    a_response.end("hey:" + s0 + ".");
+    a_httpresponse.end("hey:" + s0 + ".");
   });
   
   return true;
@@ -117,8 +121,8 @@ NodeServer.prototype.sHandleRequest_Posted = function(a_s) {
 // Make a call to a server on localhost.
 NodeServer.prototype.MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
   var me = this;
-  var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_response) {
-    a_response.on("data", function(a_chunk) {
+  var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_httpresponse) {
+    a_httpresponse.on("data", function(a_chunk) {
       var s = a_chunk.toString();
       console.log(" " + me._isPort + "-MakeRequest--Hark:" + G.sSHRINK(s) + ".");
     });

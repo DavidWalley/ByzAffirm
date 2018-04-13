@@ -37,7 +37,7 @@ ByzCrypto.prototype._bRenew = function(a_iWhichAmI, a_nNodes) {
   return true;
 };
 
-// Encript a message (using a private key).
+// Encrypt a message (using a private key).
 ByzCrypto.prototype.sEncrypt = function(a_sMessage) {
   var me = this;
   return me._nodersaPrivate.encryptPrivate(a_sMessage, "base64");

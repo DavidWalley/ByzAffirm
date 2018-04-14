@@ -1,7 +1,7 @@
 // ByzCrypto.js - Node.js wrapper for public/private encryption/decryption. RSA used as an example, but can be replaced in future.
 // Non-patented content (c)2018 David C. Walley, MIT license.
 
-console.log("Running under NODE.");
+console.log("ByzCrypto.js running under NODE.");
 var fs = require("fs");
 var NodeRSA = require("node-rsa");
 var Passwords = require("./TestPasswords.js");
@@ -26,7 +26,6 @@ ByzCrypto.byzcryptoNEW = function(a_iWhichAmI, a_nNodes) {
 ByzCrypto.prototype._bRenew = function(a_iWhichAmI, a_nNodes) {
   var me = this;
   me._anodersaPublic = [];
-  var s = "";
   me._nodersaPrivate = new NodeRSA(Passwords.sKEY(false, a_iWhichAmI));
   me._anodersaPublic[0] = new NodeRSA(Passwords.sKEY(true, 0), "public");
   me._anodersaPublic[1] = new NodeRSA(Passwords.sKEY(true, 1), "public");
@@ -34,13 +33,13 @@ ByzCrypto.prototype._bRenew = function(a_iWhichAmI, a_nNodes) {
   return true;
 };
 
-// Encrypt a message (using a private key).
+// Encrypt a message (using a private key - i.e., signing a public message), returning a base-64 encoded text string.
 ByzCrypto.prototype.sEncrypt_base64 = function(a_sMessage) {
   var me = this;
   return me._nodersaPrivate.encryptPrivate(a_sMessage, "base64");
 };
 
-// Decrypt a message (using a public key).
+// Decrypt a message (using a public key - i.e., verifying the origin and integrity of a message).
 ByzCrypto.prototype.sDecrypt = function(a_iFrom, a_sEncrypted_base64) {
   var me = this;
   var r_s = "";

@@ -1,7 +1,7 @@
 // ByzTest.js - Setup and run a network simulation test on localhost ByzAffirm server nodes.
 // (c)2018 David C. Walley, MIT license.
 
-console.log("ByzTest NODE");
+console.log("--ByzTest running under NODE");
 var NodeServer = require("./NodeServer.js");
 if ("undefined" === typeof g) {
   var G = require("./G.js");

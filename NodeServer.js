@@ -40,7 +40,7 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
     me.HandleRequest(a, b);
   });
   me._httpserver.listen(me._isPort, function() {
-    console.log("Server started on: http://localhost:" + me._isPort);
+    console.log("--Server started on: http://localhost:" + me._isPort);
   });
   
   setTimeout(function() {
@@ -74,13 +74,15 @@ NodeServer.prototype.ONtICK = function() {
   var me = this;
   me._when_ticks++;
   console.log("ONtICK " + me._isPort + " " + me._when_ticks);
-  var n = 0;
+  var iOther = 0;
   do {
-    n = Math.floor(G.dRANDOM(0, me._nNodes)) + NodeServer.nROOTpORT;
-  } while (n === me._isPort);
-  me.MakeRequest("localhost", "/?iknow", n, me._byznode.sIKnowAbout());
+    iOther = Math.floor(G.dRANDOM(0, me._nNodes)) + NodeServer.nROOTpORT;
+  } while (iOther === me._isPort);
+  me.MakeRequest("localhost", "/?iknow", iOther, me._byznode.sIKnowAbout());
   if (me._when_ticks < 5) {
-    setTimeout(me.ONtICK, 10000);
+    setTimeout(function() {
+      me.ONtICK();
+    }, 10000);
   }
   return true;
 };
@@ -121,13 +123,14 @@ NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
 // Process POSTed data after it is all re-assembled.
 NodeServer.prototype.sHandleRequest_Posted = function(a_s) {
   var me = this;
-  var r_s = me._byznode.sWhatIKnowTheyDoNot(a_s);
+  // Determine log items that we know about that the other node does not have.
+  var r_s = me._byznode.sGetNewsForThem(a_s);
   console.log(" " + me._isPort + " Hark:" + G.sSHRINK(a_s) + " Reply:" + G.sSHRINK(r_s) + ".");
   return r_s;
 };
 
 // CALL ANOTHER SERVER:
-// Make a call to a server on localhost.
+// Make a call to another server on localhost.
 NodeServer.prototype.MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
   var me = this;
   var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_httpresponse) {

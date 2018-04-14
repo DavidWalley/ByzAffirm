@@ -11,8 +11,8 @@ function ByzNode() {
   // Private variables:
   this._sName;
   this._iWhich;
-  this._iNodeNext;
   this._nNodes;
+  this._iNodeNext;
   this._byzcrypto;
   this._a2sLogs;
 }
@@ -31,40 +31,14 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   var me = this;
   me._sName = a_sName;
   me._iWhich = a_iWhich;
-  me._iNodeNext = a_iWhich;
   me._nNodes = a_nNodes;
+  me._iNodeNext = a_iWhich;
   me._byzcrypto = ByzCrypto.byzcryptoNEW(me._iWhich, me._nNodes);
-  
+  // Create empty table of copies of all nodes' logs.
   me._a2sLogs = [];
   for (var i = 0; i < a_nNodes; i++) {
     me._a2sLogs[i] = [];
   }
-  return true;
-};
-
-// Do a step in the algorithm.
-ByzNode.prototype.DoSomething = function() {
-  var me = this;
-  do {
-    me._iNodeNext = G.dMOD(me._iNodeNext + 1, me._nNodes);
-  } while (me._iNodeNext === me._iWhich);
-  
-  me._AskAnotherNode(me._iNodeNext, me.sIKnowAbout());
-  return true;
-};
-
-// Prompt another (random) node to update us.
-ByzNode.prototype._AskAnotherNode = function(a_iTo, a_sData) {
-  var me = this;
-  var iTo = a_iTo;
-  return true;
-};
-
-// Process response from prompting another node.
-ByzNode.prototype._Hark = function(a_httpresponse) {
-  var me = this;
-  console.log("5 _Hark");
-  console.log(a_httpresponse);
   return true;
 };
 
@@ -119,7 +93,7 @@ ByzNode.prototype.sShowMyLogs = function() {
 };
 
 // Report what other node does not know, based on what they have said they have now.
-ByzNode.prototype.sWhatIKnowTheyDoNot = function(a_sLogSizesOfOtherNode) {
+ByzNode.prototype.sGetNewsForThem = function(a_sLogSizesOfOtherNode) {
   var me = this;
   var r_s = "";
   var iOther = parseInt(a_sLogSizesOfOtherNode, 10);

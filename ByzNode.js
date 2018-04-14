@@ -1,5 +1,4 @@
-// ByzNode.js
-// Network Node in ByzAgree Async BFTolerant communications scheme test.
+// ByzNode.js - Network Node in ByzAffirm Async BFTolerant communications scheme test.
 // Non-patented content (c)2018 David C. Walley, MIT license.
 
 var G = require("./G.js");
@@ -7,7 +6,7 @@ var g = G.g;
 var ByzCrypto = require("./ByzCrypto.js");
 var byzcrypto;
 
-// ByzAgree network node class constructor.
+// ByzAffirm network node class constructor.
 function ByzNode() {
   // Private variables:
   this._sName;
@@ -64,6 +63,7 @@ ByzNode.prototype._AskAnotherNode = function(a_iTo, a_sData) {
 // Process response from prompting another node.
 ByzNode.prototype._Hark = function(a_httpresponse) {
   var me = this;
+  console.log("5 _Hark");
   console.log(a_httpresponse);
   return true;
 };
@@ -80,9 +80,9 @@ ByzNode.prototype.Create = function(a_sData) {
 // Encrypt and sign a message (or at least fake it for display and testing).
 ByzNode.prototype._sSealAndSign = function(a_i, a_sData, a_when) {
   var me = this;
-  var s = me._iWhich + "," + a_i + "," + a_when + ',"' + a_sData + '"';
-  var sEncrypted = me._byzcrypto.sEncrypt(s);
-  return me._sName + "{" + s + ", " + sEncrypted + " }";
+  var s = me._iWhich + "," + a_i + "," + a_when + ', "' + a_sData + '"';
+  var sEncrypted = me._byzcrypto.sEncrypt_base64(s);
+  return "{" + s + ", " + sEncrypted + "}";
 };
 
 // Create a message to report sizes of all logs kept by this node, for telling another node about extent of what is known.
@@ -98,7 +98,7 @@ ByzNode.prototype.sIKnowAbout = function() {
 };
 
 // Report everything this node knows (for debug mostly).
-ByzNode.prototype.sListMyLogs = function() {
+ByzNode.prototype.sShowMyLogs = function() {
   var me = this;
   var r_s = "**" + me._sName;
   var n = me._a2sLogs.length;
@@ -118,8 +118,8 @@ ByzNode.prototype.sListMyLogs = function() {
   return r_s;
 };
 
-// Report what other node does not know.
-ByzNode.prototype.sNeeds = function(a_sLogSizesOfOtherNode) {
+// Report what other node does not know, based on what they have said they have now.
+ByzNode.prototype.sWhatIKnowTheyDoNot = function(a_sLogSizesOfOtherNode) {
   var me = this;
   var r_s = "";
   var iOther = parseInt(a_sLogSizesOfOtherNode, 10);
@@ -136,7 +136,7 @@ ByzNode.prototype.sNeeds = function(a_sLogSizesOfOtherNode) {
     iOtherNodeAt = parseInt(as[i], 10);
     iIAmAt = me._a2sLogs[i].length;
     for (var j = iOtherNodeAt; j < iIAmAt; j++) {
-      r_s += " + " + me._a2sLogs[i][j];
+      r_s += " | " + me._a2sLogs[i][j];
     }
   }
   
@@ -146,9 +146,9 @@ ByzNode.prototype.sNeeds = function(a_sLogSizesOfOtherNode) {
 // Process all important incoming messages.
 ByzNode.prototype.Hark = function(a_sSackOfLetters) {
   var me = this;
-  console.log("--- " + me._sName + ".Hark(" + a_sSackOfLetters + ").");
+  console.log("6--- " + me._sName + ".Hark(" + G.sSHRINK(a_sSackOfLetters) + ").");
   var s = "";
-  var asLetter = a_sSackOfLetters.split("+");
+  var asLetter = a_sSackOfLetters.split("|");
   
   var n = asLetter.length;
   for (var i = 1; i < n; i++) {
@@ -164,30 +164,39 @@ ByzNode.prototype.Hark = function(a_sSackOfLetters) {
 // Process one important incoming message - put it in log.
 ByzNode.prototype._sHark_Open = function(a_sLetter) {
   var me = this;
+  console.log("20-- " + G.sSHRINK(a_sLetter));
   var as = a_sLetter.split("{");
-  var sLetterName = as[0];
-  var sLetterContents = as[1];
+  var sLetterContents = as[1].trim();
   as = sLetterContents.split(",");
-  var sLetterHash = as[0];
-  var iLetterCreator = +as[1];
-  var iLetterLogAt = +as[2];
-  var whenLetter = +as[3];
-  var sLetterData = as[4];
-  sLetterData = sLetterData.trim().slice(1, -1);
-  var s = iLetterCreator + "," + iLetterLogAt + "," + whenLetter + ',"' + sLetterData;
-  if (sLetterHash !== "#" + G.sHASH(s)) {
-    console.log("Bad message!!!");
-    return "";
+  var iLetterCreator = +as[0];
+  var iLetterLogAt = +as[1];
+  var whenLetter = +as[2];
+  var sLetterData = as[3].trim();
+  var sLetterEncrypted = as[4].trim();
+  console.log("21--" + " iLetterCreator:" + iLetterCreator + " iLetterLogAt:" + iLetterLogAt + " whenLetter:" + whenLetter + " sLetterData:" + sLetterData);
+  var sDecrypted = me._byzcrypto.sDecrypt(iLetterCreator, sLetterEncrypted);
+  as = sDecrypted.split(",");
+  if (+as[0] !== iLetterCreator) {
+    return "???0";
+  }
+  if (+as[1] !== iLetterLogAt) {
+    return "???1";
+  }
+  if (+as[2] !== whenLetter) {
+    return "???2";
+  }
+  if (as[3] !== sLetterData) {
+    return "???3";
   }
   
   me._a2sLogs[iLetterCreator][iLetterLogAt] = a_sLetter;
   
   if ("^" === sLetterData[0]) {
-    console.log(me._sName + "3 _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
+    console.log("7 " + me._sName + " _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
     return "";
   }
   
-  console.log(me._sName + "4 _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
+  console.log("8 " + me._sName + " _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
   return "^" + "abcde"[iLetterCreator] + iLetterLogAt;
 };
 

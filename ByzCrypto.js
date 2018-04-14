@@ -1,10 +1,10 @@
-// ByzCrypto.js
-// Node wrapper for RSA public/private encryption/decryption.
+// ByzCrypto.js - Node.js wrapper for public/private encryption/decryption. RSA used as an example, but can be replaced in future.
 // Non-patented content (c)2018 David C. Walley, MIT license.
 
 console.log("Running under NODE.");
 var fs = require("fs");
 var NodeRSA = require("node-rsa");
+var Passwords = require("./TestPasswords.js");
 
 // Wrapper for public/private cryptographic messaging.
 function ByzCrypto() {
@@ -27,28 +27,25 @@ ByzCrypto.prototype._bRenew = function(a_iWhichAmI, a_nNodes) {
   var me = this;
   me._anodersaPublic = [];
   var s = "";
-  var sROOTpATH = "C:/$/Code/Byzantine/Crypto/";
-  s = fs.readFileSync(sROOTpATH + "privatekey-" + a_iWhichAmI + ".pem").toString();
-  me._nodersaPrivate = new NodeRSA(s);
-  for (var i = 0; i < a_nNodes; i++) {
-    s = fs.readFileSync(sROOTpATH + "publickey-" + i + ".pem").toString();
-    me._anodersaPublic[i] = new NodeRSA(s, "public");
-  }
+  me._nodersaPrivate = new NodeRSA(Passwords.sKEY(false, a_iWhichAmI));
+  me._anodersaPublic[0] = new NodeRSA(Passwords.sKEY(true, 0), "public");
+  me._anodersaPublic[1] = new NodeRSA(Passwords.sKEY(true, 1), "public");
+  me._anodersaPublic[2] = new NodeRSA(Passwords.sKEY(true, 2), "public");
   return true;
 };
 
 // Encrypt a message (using a private key).
-ByzCrypto.prototype.sEncrypt = function(a_sMessage) {
+ByzCrypto.prototype.sEncrypt_base64 = function(a_sMessage) {
   var me = this;
   return me._nodersaPrivate.encryptPrivate(a_sMessage, "base64");
 };
 
 // Decrypt a message (using a public key).
-ByzCrypto.prototype.sDecrypt = function(a_iFrom, a_sEncrypted_b64) {
+ByzCrypto.prototype.sDecrypt = function(a_iFrom, a_sEncrypted_base64) {
   var me = this;
   var r_s = "";
   try {
-    r_s = me._anodersaPublic[a_iFrom].decryptPublic(a_sEncrypted_b64, "utf8");
+    r_s = me._anodersaPublic[a_iFrom].decryptPublic(a_sEncrypted_base64, "utf8");
   } catch (e) {
     r_s = "ERROR";
   }
@@ -61,8 +58,8 @@ sTESTING = process.argv[3];
 if ("TEST" === sTESTING) {
   var byzcrypto0 = ByzCrypto.byzcryptoNEW(0, 3);
   var sText = "It worked if you can read this.";
-  var sEncrypted_b64 = byzcrypto0.sEncrypt(sText);
-  var sDecrypted = byzcrypto0.sDecrypt(0, sEncrypted_b64);
+  var sEncrypted_base64 = byzcrypto0.sEncrypt_base64(sText);
+  var sDecrypted = byzcrypto0.sDecrypt(0, sEncrypted_base64);
   if (sDecrypted === sText) {
     console.log("ok:" + sDecrypted);
   } else {

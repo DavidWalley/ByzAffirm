@@ -1,5 +1,4 @@
-// ByzTest.js
-// Setup and run test on local ByzAgree nodes.
+// ByzTest.js - Setup and run a network simulation test on localhost ByzAffirm server nodes.
 // (c)2018 David C. Walley, MIT license.
 
 console.log("ByzTest NODE");
@@ -9,7 +8,7 @@ if ("undefined" === typeof g) {
   var g = G.g;
 }
 
-// Define a class to test a number of ByzAgree nodes.
+// Define a class to test a number of ByzAffirm nodes.
 function ByzTest() {
   // Private variables:
   this._anodeserverAll;
@@ -33,10 +32,10 @@ ByzTest.prototype._bRenew = function(a_asNodeNames) {
     me._anodeserverAll[i] = NodeServer.nodeserverNEW(a_asNodeNames[i], i, n);
   }
   
-  console.log("-0-- Start All.");
+  console.log("10-- Start All.");
   me.ConsoleShow();
   me._anodeserverAll[0].Create("Hello1");
-  console.log('-1-- Ann created "Hello1".');
+  console.log('11-- Ann created "Hello1".');
   me.ConsoleShow();
   
   return true;
@@ -47,7 +46,7 @@ ByzTest.prototype.ConsoleShow = function() {
   var me = this;
   var n = me._anodeserverAll.length;
   for (var i = 0; i < n; i++) {
-    console.log(me._anodeserverAll[i].sIKnowAbout());
+    console.log("20 ConsoleShow--" + me._anodeserverAll[i].sShowMyLogs());
   }
   return true;
 };

@@ -1,5 +1,5 @@
-// G.js
-// General Purpose JavaScript routines. Global, polluting, but handy code conveniences.
+
+// G.js - General Purpose JavaScript routines. Global, polluting, but handy code conveniences.
 // (c)2018 David C. Walley, MIT license.
 
 // Class of super global, super naughty, but super handy code conveniences.

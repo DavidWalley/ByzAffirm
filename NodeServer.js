@@ -1,5 +1,4 @@
-// NodeServer_js.php
-// Localhost server node for test of multi-server communications.
+// NodeServer_js.php - Node.js localhost server, for testing one node of ByzAffirm multi-node communications.
 // (c)2018 David C. Walley, MIT license.
 
 var g_http = require("http");
@@ -17,6 +16,7 @@ function NodeServer() {
   this._nNodes;
   this._httpserver;
   this._byznode;
+  this._when_ticks;
 }
 
 // Factory constructor of instance of this class.
@@ -34,6 +34,7 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   me._isPort = NodeServer.nROOTpORT + a_iWhich;
   me._nNodes = a_nNodes;
   me._byznode = ByzNode.byznodeNEW(a_sName, a_iWhich, a_nNodes);
+  me._when_ticks = 0;
   
   me._httpserver = g_http.createServer(function(a, b) {
     me.HandleRequest(a, b);
@@ -56,21 +57,31 @@ NodeServer.prototype.Create = function(a_sData) {
   return me._byznode.Create(a_sData);
 };
 
-// Wrapper for reporting a text representation of the message logs of this server.
+// Wrapper for reporting the sizes of the message logs of this server.
 NodeServer.prototype.sIKnowAbout = function() {
   var me = this;
   return me._byznode.sIKnowAbout();
 };
 
+// Wrapper for reporting a text representation of the message logs of this server.
+NodeServer.prototype.sShowMyLogs = function() {
+  var me = this;
+  return me._byznode.sShowMyLogs();
+};
+
 // PERIODIC:
 NodeServer.prototype.ONtICK = function() {
   var me = this;
-  console.log("ONtICK " + me._isPort);
+  me._when_ticks++;
+  console.log("ONtICK " + me._isPort + " " + me._when_ticks);
   var n = 0;
   do {
     n = Math.floor(G.dRANDOM(0, me._nNodes)) + NodeServer.nROOTpORT;
   } while (n === me._isPort);
-  me.MakeRequest("localhost", "/?igot", n, me._byznode.sIKnowAbout());
+  me.MakeRequest("localhost", "/?iknow", n, me._byznode.sIKnowAbout());
+  if (me._when_ticks < 5) {
+    setTimeout(me.ONtICK, 10000);
+  }
   return true;
 };
 
@@ -110,10 +121,8 @@ NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
 // Process POSTed data after it is all re-assembled.
 NodeServer.prototype.sHandleRequest_Posted = function(a_s) {
   var me = this;
-  var r_s = "yahoo>" + a_s + "<";
-  console.log(" " + me._isPort + "-sHandleRequest_Posted--Hark:" + G.sSHRINK(a_s) + ".");
-  r_s = me._byznode.sNeeds(a_s);
-  console.log(" " + me._isPort + "-sHandleRequest_Posted--Tell:" + G.sSHRINK(r_s) + ".");
+  var r_s = me._byznode.sWhatIKnowTheyDoNot(a_s);
+  console.log(" " + me._isPort + " Hark:" + G.sSHRINK(a_s) + " Reply:" + G.sSHRINK(r_s) + ".");
   return r_s;
 };
 
@@ -124,7 +133,8 @@ NodeServer.prototype.MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataP
   var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_httpresponse) {
     a_httpresponse.on("data", function(a_chunk) {
       var s = a_chunk.toString();
-      console.log(" " + me._isPort + "-MakeRequest--Hark:" + G.sSHRINK(s) + ".");
+      console.log(" " + me._isPort + " Reply:" + G.sSHRINK(s) + ".");
+      me._byznode.Hark(s);
     });
   });
   requestPost.write(a_sDataPayloadOut);

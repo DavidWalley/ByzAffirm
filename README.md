@@ -66,3 +66,4 @@ As my first task, I want to write a simple demo of the above and see if it works
 - Ability to set up node.js test nodes on localhost, using sequential ports 8080, 8081.... While not required for testing, this architecture is closer to what the final version will be like.
 - RSA cryptology for private-key encryption and public-key decryption is working. In future, this could be replaced with any private/public cryptographic scheme.
 - To do next: Re-implement all aspects of gossip protocol within node.js servers architecture.
+- Gossip protocol passed simplest test - logs not running away during basic test.

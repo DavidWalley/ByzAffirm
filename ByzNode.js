@@ -54,31 +54,20 @@ ByzNode.prototype.CreateLog = function(a_sData_SafeCharacters) {
     }
     var iNode = +as[1];
     var iAt = +as[2];
-    if (iNode < 0) {
-      console.log("??? 0");
-      return false;
-    }
-    if (me._a2sLogs.length <= iNode) {
-      console.log("??? 1");
-      return false;
-    }
-    if (iAt < 0) {
-      console.log("??? 2");
-      return false;
-    }
-    if (me._a2sLogs[iNode].length <= iAt) {
-      console.log("??? 3");
+    if (iNode < 0 || me._a2sLogs.length <= iNode || iAt < 0 || me._a2sLogs[iNode].length <= iAt) {
+      console.log("**09 " + me._sName + " This should not happen.");
       return false;
     }
     if (0 <= me._a2sLogs[iNode][iAt].indexOf("^")) {
-      console.log("**10 " + me._sName + ' Drop link to link "' + a_sData_SafeCharacters + '" ' + G.sSHRINK(me._a2sLogs[iNode][iAt]) + ".");
+      console.log("**10 " + me._sName + ' Drop link to link "' + a_sData_SafeCharacters + '".');
       return true;
     }
   }
+  // Create a log item:
   var s = me._iWhich + "," + me._a2sLogs[me._iWhich].length + "," + g.whenNow_ms() + ', "' + a_sData_SafeCharacters + '"';
   var sEncrypted = me._byzcrypto.sEncryptPrivate_base64(s);
   me._a2sLogs[me._iWhich].push(s + ", " + sEncrypted);
-  console.log("**11 " + me._sName + ' Created "' + sReason + " ,>" + s + " " + G.sSHRINK(sEncrypted) + "<" + me.sListOfMyLogs());
+  console.log("**11 " + me._sName + ' Created "' + sReason + ",>" + s + " " + G.sSHRINK(sEncrypted) + "<" + me.sListOfMyLogs());
   return true;
 };
 
@@ -180,7 +169,30 @@ ByzNode.prototype._isHark_Open = function(a_sLetter) {
   var sData = as[3].trim();
   var sAllEncrypted = as[4].trim();
   var sDecrypted = me._byzcrypto.sDecryptPublic(iCreator, sAllEncrypted);
-  as = sDecrypted.split(",");
+  var isResult = me._isHark_Open_Verify(a_sLetter, sDecrypted, iCreator, iLogAt, when, sData);
+  if (0 !== isResult) {
+    return isResult;
+  }
+  console.log("**37 " + me._sName + " OK {" + G.sSHRINK(a_sLetter) + '} = "^' + iCreator + "^" + iLogAt + '".');
+  as = a_sLetter.split("^");
+  var sReason = "???";
+  if (as.length <= 1) {
+    sReason = "No caret, links to data, so go ahead.";
+  } else {
+    if (+as[1] !== me._iWhich) {
+      sReason = "Different " + as[1] + " != " + me._iWhich + ", so go ahead.";
+    } else {
+      console.log("**38 " + me._sName + " NOT logging this, links back to self.");
+      return -9;
+    }
+  }
+  me.CreateLog("^" + iCreator + "^" + iLogAt + " ");
+  return 0;
+};
+
+ByzNode.prototype._isHark_Open_Verify = function(a_sLetter, sDecrypted, iCreator, iLogAt, when, sData) {
+  var me = this;
+  var as = sDecrypted.split(",");
   if (+as[0].trim() !== iCreator) {
     console.log("##30 " + me._sName + " Error >" + as[0] + "<>" + iCreator + "<");
     return -2;
@@ -200,11 +212,6 @@ ByzNode.prototype._isHark_Open = function(a_sLetter) {
   
   me._a2sLogs[iCreator][iLogAt] = a_sLetter;
   console.log("**35 " + me._sName + " --- logging " + iCreator + "," + iLogAt + "=" + G.sSHRINK(a_sLetter) + "<" + me.sListOfMyLogs());
-  
-  if ("^" === sData[0]) {
-    console.log("????????? 7 " + me._sName + " _isHark_Open(" + a_sLetter + ")" + sData + ".");
-    return -9999;
-  }
   // Check for link to make sure it is pointing to a valid, existing entry:
   if (iCreator < 0) {
     return -6;
@@ -219,20 +226,6 @@ ByzNode.prototype._isHark_Open = function(a_sLetter) {
     // Report that we will have to try this again later.
     return 1;
   }
-  console.log("**37 " + me._sName + " OK {" + G.sSHRINK(a_sLetter) + '} = "^' + iCreator + "^" + iLogAt + '".');
-  as = a_sLetter.split("^");
-  var sReason = "???";
-  if (as.length <= 1) {
-    sReason = "No caret, links to data, so go ahead.";
-  } else {
-    if (+as[1] !== me._iWhich) {
-      sReason = "Different " + as[1] + " != " + me._iWhich + ", so go ahead.";
-    } else {
-      console.log("**38 " + me._sName + " NOT logging this, links back to self.");
-      return -9;
-    }
-  }
-  me.CreateLog("^" + iCreator + "^" + iLogAt + " ");
   return 0;
 };
 

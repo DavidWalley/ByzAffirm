@@ -12,11 +12,12 @@ if ("undefined" === typeof g) {
 // Constructor to run a node.js server.
 function NodeServer() {
   // Private variables:
+  this._sName;
   this._isPort;
   this._nNodes;
   this._httpserver;
   this._byznode;
-  this._when_ticks;
+  this._ticks;
 }
 
 // Factory constructor of instance of this class.
@@ -31,58 +32,60 @@ NodeServer.nodeserverNEW = function(a_sName, a_iWhich, a_nNodes) {
 // Initialize or reset object.
 NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   var me = this;
-  me._isPort = NodeServer.nROOTpORT + a_iWhich;
+  me._sName = a_sName;
+  me._isPort = a_iWhich + NodeServer.nROOTpORT;
   me._nNodes = a_nNodes;
   me._byznode = ByzNode.byznodeNEW(a_sName, a_iWhich, a_nNodes);
-  me._when_ticks = 0;
+  me._ticks = 0;
   
   me._httpserver = g_http.createServer(function(a, b) {
     me.HandleRequest(a, b);
   });
   me._httpserver.listen(me._isPort, function() {
-    console.log("--Server started on: http://localhost:" + me._isPort);
+    console.log("##17 " + a_sName + " started: http://localhost:" + me._isPort);
   });
   
   setTimeout(function() {
     me.ONtICK();
-  }, 1000 * (a_iWhich + 1));
+  }, 100 + 1000 * a_iWhich);
   
   return true;
 };
 
 NodeServer.nROOTpORT = 8080;
-// Wrapper for creating a new log item.
-NodeServer.prototype.Create = function(a_sData) {
-  var me = this;
-  return me._byznode.Create(a_sData);
-};
 
 // Wrapper for reporting the sizes of the message logs of this server.
-NodeServer.prototype.sIKnowAbout = function() {
+NodeServer.prototype.sHowMuchIKnow = function() {
   var me = this;
-  return me._byznode.sIKnowAbout();
+  return me._byznode.sHowMuchIKnow();
 };
 
 // Wrapper for reporting a text representation of the message logs of this server.
-NodeServer.prototype.sShowMyLogs = function() {
+NodeServer.prototype.sListOfMyLogs = function() {
   var me = this;
-  return me._byznode.sShowMyLogs();
+  return me._byznode.sListOfMyLogs();
+};
+
+// Wrapper for creating a new log item.
+NodeServer.prototype.CreateLog = function(a_sData) {
+  var me = this;
+  return me._byznode.CreateLog(a_sData);
 };
 
 // PERIODIC:
 NodeServer.prototype.ONtICK = function() {
   var me = this;
-  me._when_ticks++;
-  console.log("ONtICK " + me._isPort + " " + me._when_ticks);
+  me._ticks++;
   var iOther = 0;
   do {
     iOther = Math.floor(G.dRANDOM(0, me._nNodes)) + NodeServer.nROOTpORT;
   } while (iOther === me._isPort);
-  me.MakeRequest("localhost", "/?iknow", iOther, me._byznode.sIKnowAbout());
-  if (me._when_ticks < 5) {
+  var s = me._byznode.sHowMuchIKnow();
+  me._OnTick_MakeRequest("localhost", "/?igot", iOther, s);
+  if (me._ticks < 15) {
     setTimeout(function() {
       me.ONtICK();
-    }, 10000);
+    }, 2000);
   }
   return true;
 };
@@ -98,46 +101,57 @@ NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
     a_httprequest.connection.destroy;
     me._httpserver.close();
   }
+  if (!("/?igot" === a_httprequest.url)) {
+    throw new Error("ASSERTION: ErrorMessage");
+  }
   
   if ("POST" !== a_httprequest.method) {
     a_httpresponse.end("");
     return false;
   }
   
-  var s = "";
-  a_httprequest.on("data", function(a_s) {
-    s += a_s;
-    if (1000000 < s.length) {
+  var sBuffer = "";
+  a_httprequest.on("data", function(a_sChunk) {
+    sBuffer += a_sChunk;
+    if (1000000 < sBuffer.length) {
       a_httprequest.connection.destroy();
     }
   });
   
   a_httprequest.on("end", function() {
-    var s0 = me.sHandleRequest_Posted(s);
-    a_httpresponse.end("hey:" + s0 + ".");
+    a_httpresponse.end(me._sHandleRequest_ReplyToPost(sBuffer));
   });
   
   return true;
 };
 
 // Process POSTed data after it is all re-assembled.
-NodeServer.prototype.sHandleRequest_Posted = function(a_s) {
+NodeServer.prototype._sHandleRequest_ReplyToPost = function(a_sHowMuchTheyKnow) {
   var me = this;
   // Determine log items that we know about that the other node does not have.
-  var r_s = me._byznode.sGetNewsForThem(a_s);
-  console.log(" " + me._isPort + " Hark:" + G.sSHRINK(a_s) + " Reply:" + G.sSHRINK(r_s) + ".");
+  var r_s = me._byznode.sGetNewsForThem(a_sHowMuchTheyKnow);
+  if ("?" === r_s[0]) {
+    console.log("##18 " + me._sName + "(" + me._isPort + ") hears:" + G.sSHRINK(a_sHowMuchTheyKnow) + " and quits.");
+    return "";
+  }
   return r_s;
 };
 
 // CALL ANOTHER SERVER:
 // Make a call to another server on localhost.
-NodeServer.prototype.MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
+NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
   var me = this;
+  var sRequestNotes = me._sName + "(" + me._isPort + ") " + me._ticks + "t --\x3e to:" + a_isPort + "/?igot " + a_sDataPayloadOut;
+  var sBuffer = "";
   var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_httpresponse) {
     a_httpresponse.on("data", function(a_chunk) {
-      var s = a_chunk.toString();
-      console.log(" " + me._isPort + " Reply:" + G.sSHRINK(s) + ".");
-      me._byznode.Hark(s);
+      sBuffer += a_chunk.toString();
+    });
+    a_httpresponse.on("end", function() {
+      if ("" !== sBuffer) {
+        console.log("##20 " + sRequestNotes + " <-- " + G.sSHRINK(sBuffer));
+        me._byznode.Hark(sBuffer);
+      }
     });
   });
   requestPost.write(a_sDataPayloadOut);

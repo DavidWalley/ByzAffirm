@@ -137,7 +137,7 @@ G.sSHRINK = function(a_s) {
     if (as[i].length < 40) {
       r_s += " " + as[i];
     } else {
-      r_s += " " + as[i].slice(0, 10) + "..." + as[i].slice(-5);
+      r_s += " " + as[i].slice(0, 4) + ".." + as[i].slice(-3);
     }
   }
   return r_s;

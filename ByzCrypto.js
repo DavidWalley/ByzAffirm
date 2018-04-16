@@ -1,7 +1,8 @@
 // ByzCrypto.js - Node.js wrapper for public/private encryption/decryption. RSA used as an example, but can be replaced in future.
 // Non-patented content (c)2018 David C. Walley, MIT license.
 
-console.log("ByzCrypto.js running under NODE.");
+console.log("###1 ByzCrypto.js running under NODE.");
+var G = require("./G.js");
 var fs = require("fs");
 var NodeRSA = require("node-rsa");
 var Passwords = require("./TestPasswords.js");
@@ -34,13 +35,13 @@ ByzCrypto.prototype._bRenew = function(a_iWhichAmI, a_nNodes) {
 };
 
 // Encrypt a message (using a private key - i.e., signing a public message), returning a base-64 encoded text string.
-ByzCrypto.prototype.sEncrypt_base64 = function(a_sMessage) {
+ByzCrypto.prototype.sEncryptPrivate_base64 = function(a_sMessage) {
   var me = this;
   return me._nodersaPrivate.encryptPrivate(a_sMessage, "base64");
 };
 
 // Decrypt a message (using a public key - i.e., verifying the origin and integrity of a message).
-ByzCrypto.prototype.sDecrypt = function(a_iFrom, a_sEncrypted_base64) {
+ByzCrypto.prototype.sDecryptPublic = function(a_iFrom, a_sEncrypted_base64) {
   var me = this;
   var r_s = "";
   try {
@@ -57,10 +58,10 @@ sTESTING = process.argv[3];
 if ("TEST" === sTESTING) {
   var byzcrypto0 = ByzCrypto.byzcryptoNEW(0, 3);
   var sText = "It worked if you can read this.";
-  var sEncrypted_base64 = byzcrypto0.sEncrypt_base64(sText);
-  var sDecrypted = byzcrypto0.sDecrypt(0, sEncrypted_base64);
+  var sEncrypted_base64 = byzcrypto0.sEncryptPrivate_base64(sText);
+  var sDecrypted = byzcrypto0.sDecryptPublic(0, sEncrypted_base64);
   if (sDecrypted === sText) {
-    console.log("ok:" + sDecrypted);
+    console.log("###2 ok:" + sDecrypted);
   } else {
     console.log("BAD:" + sDecrypted);
   }

@@ -34,7 +34,7 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   me._nNodes = a_nNodes;
   me._iNodeNext = a_iWhich;
   me._byzcrypto = ByzCrypto.byzcryptoNEW(me._iWhich, me._nNodes);
-  // Create empty table of copies of all nodes' logs.
+  // For each node, initialize list of copies of encoded and signed message.
   me._a2sLogs = [];
   for (var i = 0; i < a_nNodes; i++) {
     me._a2sLogs[i] = [];
@@ -42,49 +42,73 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   return true;
 };
 
-// Create item with data-payload in own log.
-ByzNode.prototype.Create = function(a_sData) {
+// Create and encrypt (sign) item with data-payload in own log.
+// In production, the data payload should probably be a hash relating back to an original record that is delivered outside of this consensus system.
+ByzNode.prototype.CreateLog = function(a_sData_SafeCharacters) {
   var me = this;
-  var when = g.whenNow_ms();
-  var i = me._a2sLogs[me._iWhich].length;
-  me._a2sLogs[me._iWhich].push(me._sSealAndSign(i, a_sData, when));
+  console.log("##60 " + me._sName + ' Create log (possibly) "' + a_sData_SafeCharacters + '".');
+  var as = a_sData_SafeCharacters.split("^");
+  var sReason = ' Real data, so log "';
+  if (1 < as.length) {
+    if (!(as.length === 3)) {
+      throw new Error("ASSERTION: Should be exactly 2 carets.");
+    }
+    var iNode = +as[1];
+    var iAt = +as[2];
+    if (iNode < 0) {
+      console.log("??? 0");
+      return false;
+    }
+    if (me._a2sLogs.length <= iNode) {
+      console.log("??? 1");
+      return false;
+    }
+    if (iAt < 0) {
+      console.log("??? 2");
+      return false;
+    }
+    if (me._a2sLogs[iNode].length <= iAt) {
+      console.log("??? 3");
+      return false;
+    }
+    if (0 <= me._a2sLogs[iNode][iAt].indexOf("^")) {
+      console.log("##61 " + me._sName + " Link to link >>" + G.sSHRINK(me._a2sLogs[iNode][iAt]) + "<<.");
+      return true;
+    }
+  }
+  var s = me._iWhich + "," + me._a2sLogs[me._iWhich].length + "," + g.whenNow_ms() + ', "' + a_sData_SafeCharacters + '"';
+  var sEncrypted = me._byzcrypto.sEncryptPrivate_base64(s);
+  console.log("##62 " + me._sName + sReason + " creating " + s + ", " + G.sSHRINK(sEncrypted) + "<");
+  me._a2sLogs[me._iWhich].push(s + ", " + sEncrypted);
+  console.log("##09 " + me._sName + " " + me.sListOfMyLogs());
   return true;
 };
 
-// Encrypt and sign a message (or at least fake it for display and testing).
-ByzNode.prototype._sSealAndSign = function(a_i, a_sData, a_when) {
-  var me = this;
-  var s = me._iWhich + "," + a_i + "," + a_when + ', "' + a_sData + '"';
-  var sEncrypted = me._byzcrypto.sEncrypt_base64(s);
-  return "{" + s + ", " + sEncrypted + "}";
-};
-
 // Create a message to report sizes of all logs kept by this node, for telling another node about extent of what is known.
-ByzNode.prototype.sIKnowAbout = function() {
+ByzNode.prototype.sHowMuchIKnow = function() {
   var me = this;
-  var r_s = "" + me._iWhich;
+  var r_s = me._sName + " ";
   var n = me._a2sLogs.length;
   for (var i = 0; i < n; i++) {
-    r_s += (0 === i ? "[" : ",") + me._a2sLogs[i].length;
+    r_s += "," + me._a2sLogs[i].length;
   }
-  r_s += "]";
   return r_s;
 };
 
 // Report everything this node knows (for debug mostly).
-ByzNode.prototype.sShowMyLogs = function() {
+ByzNode.prototype.sListOfMyLogs = function() {
   var me = this;
-  var r_s = "**" + me._sName;
+  var r_s = "I, " + me._sName + ", know:";
   var n = me._a2sLogs.length;
   var m;
   var j;
   
   for (var i = 0; i < n; i++) {
-    r_s += "\n   " + "abcdef"[i] + ":";
+    r_s += "\n  " + "abcdef"[i] + ":";
     m = me._a2sLogs[i].length;
     if (0 < m) {
       for (j = 0; j < m; j++) {
-        r_s += " " + j + "{" + G.sSHRINK(me._a2sLogs[i][j]) + "}";
+        r_s += " [" + G.sSHRINK(me._a2sLogs[i][j]) + "]";
       }
     }
   }
@@ -93,24 +117,23 @@ ByzNode.prototype.sShowMyLogs = function() {
 };
 
 // Report what other node does not know, based on what they have said they have now.
-ByzNode.prototype.sGetNewsForThem = function(a_sLogSizesOfOtherNode) {
+ByzNode.prototype.sGetNewsForThem = function(a_sHowMuchTheyKnow) {
   var me = this;
   var r_s = "";
-  var iOther = parseInt(a_sLogSizesOfOtherNode, 10);
-  var as = a_sLogSizesOfOtherNode.split("[");
+  var as = a_sHowMuchTheyKnow.split(",");
   if (as.length < 2) {
-    console.log("Oops:" + JSON.stringify(as));
+    console.log("Oops: " + me._sName + " " + JSON.stringify(as));
     return "Error";
   }
+  var iOther = parseInt(as[0], 10);
   
-  as = as[1].split(",");
   var iOtherNodeAt = 0;
   var iIAmAt = 0;
-  for (var i = 0; i < as.length; i++) {
+  for (var i = 1; i < as.length; i++) {
     iOtherNodeAt = parseInt(as[i], 10);
-    iIAmAt = me._a2sLogs[i].length;
+    iIAmAt = me._a2sLogs[i - 1].length;
     for (var j = iOtherNodeAt; j < iIAmAt; j++) {
-      r_s += " | " + me._a2sLogs[i][j];
+      r_s += " | " + me._a2sLogs[i - 1][j];
     }
   }
   
@@ -120,58 +143,102 @@ ByzNode.prototype.sGetNewsForThem = function(a_sLogSizesOfOtherNode) {
 // Process all important incoming messages.
 ByzNode.prototype.Hark = function(a_sSackOfLetters) {
   var me = this;
-  console.log("6--- " + me._sName + ".Hark(" + G.sSHRINK(a_sSackOfLetters) + ").");
-  var s = "";
+  var is = 0;
   var asLetter = a_sSackOfLetters.split("|");
   
   var n = asLetter.length;
-  for (var i = 1; i < n; i++) {
-    s += me._sHark_Open(asLetter[i].trim());
-  }
+  var bMoreToDo = true;
+  var nDebugLimit = 1;
+  do {
+    nDebugLimit--;
+    if (nDebugLimit < 0) {
+      console.log("Ooooooops");
+      if (!false) {
+        throw new Error("ASSERTION: Oooooops");
+      }
+    }
+    bMoreToDo = false;
+    for (var i = 1; i < n; i++) {
+      is = me._isHark_Open(asLetter[i].trim());
+      if (0 < is) {
+        bMoreToDo = true;
+      }
+    }
+  } while (bMoreToDo);
   
-  if ("" !== s) {
-    me.Create(s);
-  }
   return true;
 };
 
 // Process one important incoming message - put it in log.
-ByzNode.prototype._sHark_Open = function(a_sLetter) {
+ByzNode.prototype._isHark_Open = function(a_sLetter) {
   var me = this;
-  console.log("20-- " + G.sSHRINK(a_sLetter));
-  var as = a_sLetter.split("{");
-  var sLetterContents = as[1].trim();
-  as = sLetterContents.split(",");
-  var iLetterCreator = +as[0];
-  var iLetterLogAt = +as[1];
-  var whenLetter = +as[2];
-  var sLetterData = as[3].trim();
-  var sLetterEncrypted = as[4].trim();
-  console.log("21--" + " iLetterCreator:" + iLetterCreator + " iLetterLogAt:" + iLetterLogAt + " whenLetter:" + whenLetter + " sLetterData:" + sLetterData);
-  var sDecrypted = me._byzcrypto.sDecrypt(iLetterCreator, sLetterEncrypted);
+  console.log("##70 " + me._sName + " hears " + G.sSHRINK(a_sLetter));
+  if ("" === a_sLetter) {
+    return -1;
+  }
+  var as = a_sLetter.split(",");
+  var iCreator = +as[0];
+  var iLogAt = +as[1];
+  var when = +as[2];
+  var sData = as[3].trim();
+  var sAllEncrypted = as[4].trim();
+  var sDecrypted = me._byzcrypto.sDecryptPublic(iCreator, sAllEncrypted);
   as = sDecrypted.split(",");
-  if (+as[0] !== iLetterCreator) {
-    return "???0";
+  if (+as[0].trim() !== iCreator) {
+    console.log("##30 " + me._sName + " Error >" + as[0] + "<>" + iCreator + "<");
+    return -2;
   }
-  if (+as[1] !== iLetterLogAt) {
-    return "???1";
+  if (+as[1].trim() !== iLogAt) {
+    console.log("##31 " + me._sName + " Error >" + as[1] + "<>" + iLogAt + "<");
+    return -3;
   }
-  if (+as[2] !== whenLetter) {
-    return "???2";
+  if (+as[2].trim() !== when) {
+    console.log("##32 " + me._sName + " Error >" + as[2] + "<>" + when + "<");
+    return -4;
   }
-  if (as[3] !== sLetterData) {
-    return "???3";
-  }
-  
-  me._a2sLogs[iLetterCreator][iLetterLogAt] = a_sLetter;
-  
-  if ("^" === sLetterData[0]) {
-    console.log("7 " + me._sName + " _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
-    return "";
+  if (as[3].trim() !== sData) {
+    console.log("##33 " + me._sName + " Error >" + as[3] + "<>" + sData + "<");
+    return -5;
   }
   
-  console.log("8 " + me._sName + " _sHark_Open(" + a_sLetter + ")" + sLetterData + ".");
-  return "^" + "abcde"[iLetterCreator] + iLetterLogAt;
+  console.log("##80 " + me._sName + " --- logging " + iCreator + "," + iLogAt + "=" + G.sSHRINK(a_sLetter) + "<");
+  me._a2sLogs[iCreator][iLogAt] = a_sLetter;
+  console.log("##11 " + me._sName + " " + me.sListOfMyLogs());
+  
+  if ("^" === sData[0]) {
+    console.log("xxxxxxxxxxxxxxxxxxxxxx7 " + me._sName + " _isHark_Open(" + a_sLetter + ")" + sData + ".");
+    return -9999;
+  }
+  // Check for link to make sure it is pointing to a valid, existing entry:
+  if (iCreator < 0) {
+    return -6;
+  }
+  if (me._a2sLogs.length <= iCreator) {
+    return -7;
+  }
+  if (iLogAt < 0) {
+    return -8;
+  }
+  if (me._a2sLogs[iCreator].length <= iLogAt) {
+    // Report that we will have to try this again later.
+    return 1;
+  }
+  console.log("##90 " + me._sName + " OK {" + G.sSHRINK(a_sLetter) + '} = "^' + iCreator + "^" + iLogAt + '".');
+  as = a_sLetter.split("^");
+  var sReason = "???";
+  if (as.length <= 1) {
+    sReason = "No caret, links to data, so go ahead.";
+  } else {
+    if (+as[1] !== me._iWhich) {
+      sReason = "Different " + as[1] + " != " + me._iWhich + ", so go ahead.";
+    } else {
+      console.log("##93 " + me._sName + " NOT logging this, links back to self.");
+      return -9;
+    }
+  }
+  console.log("##94 " + me._sName + " " + sReason + " Create an item.");
+  me.CreateLog("^" + iCreator + "^" + iLogAt + " ");
+  return 0;
 };
 
 exports.byznodeNEW = ByzNode.byznodeNEW;

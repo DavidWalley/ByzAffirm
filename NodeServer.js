@@ -42,7 +42,7 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
     me.HandleRequest(a, b);
   });
   me._httpserver.listen(me._isPort, function() {
-    console.log("##17 " + a_sName + " started: http://localhost:" + me._isPort);
+    console.log("**50 " + a_sName + " started: http://localhost:" + me._isPort);
   });
   
   setTimeout(function() {
@@ -131,7 +131,7 @@ NodeServer.prototype._sHandleRequest_ReplyToPost = function(a_sHowMuchTheyKnow) 
   // Determine log items that we know about that the other node does not have.
   var r_s = me._byznode.sGetNewsForThem(a_sHowMuchTheyKnow);
   if ("?" === r_s[0]) {
-    console.log("##18 " + me._sName + "(" + me._isPort + ") hears:" + G.sSHRINK(a_sHowMuchTheyKnow) + " and quits.");
+    console.log("##51 " + me._sName + "(" + me._isPort + ") hears:" + G.sSHRINK(a_sHowMuchTheyKnow) + " and quits.");
     return "";
   }
   return r_s;
@@ -149,7 +149,7 @@ NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, 
     });
     a_httpresponse.on("end", function() {
       if ("" !== sBuffer) {
-        console.log("##20 " + sRequestNotes + " <-- " + G.sSHRINK(sBuffer));
+        console.log("**52 " + sRequestNotes + " <-- " + G.sSHRINK(sBuffer));
         me._byznode.Hark(sBuffer);
       }
     });

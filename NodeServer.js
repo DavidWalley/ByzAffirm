@@ -54,22 +54,28 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
 
 NodeServer.nROOTpORT = 8080;
 
-// Wrapper for reporting the sizes of the message logs of this server.
+// Report the sizes of the message logs of this server.
 NodeServer.prototype.sHowMuchIKnow = function() {
   var me = this;
   return me._byznode.sHowMuchIKnow();
 };
 
-// Wrapper for reporting a text representation of the message logs of this server.
+// Report text of message logs of this server.
 NodeServer.prototype.sListOfMyLogs = function() {
   var me = this;
   return me._byznode.sListOfMyLogs();
 };
 
 // Wrapper for creating a new log item.
-NodeServer.prototype.CreateLog = function(a_sData) {
+NodeServer.prototype.CreateLog = function(a_s) {
   var me = this;
-  return me._byznode.CreateLog(a_sData);
+  return me._byznode.CreateLog(a_s);
+};
+
+// Process POSTed data after it is all re-assembled.
+NodeServer.prototype._sHandleRequest_ReplyToPost = function(a_sHowMuchTheyKnow) {
+  var me = this;
+  return me._byznode.sGetNewsForThem(a_sHowMuchTheyKnow);
 };
 
 // PERIODIC:
@@ -123,18 +129,6 @@ NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
   });
   
   return true;
-};
-
-// Process POSTed data after it is all re-assembled.
-NodeServer.prototype._sHandleRequest_ReplyToPost = function(a_sHowMuchTheyKnow) {
-  var me = this;
-  // Determine log items that we know about that the other node does not have.
-  var r_s = me._byznode.sGetNewsForThem(a_sHowMuchTheyKnow);
-  if ("?" === r_s[0]) {
-    console.log("##51 " + me._sName + "(" + me._isPort + ") hears:" + G.sSHRINK(a_sHowMuchTheyKnow) + " and quits.");
-    return "";
-  }
-  return r_s;
 };
 
 // CALL ANOTHER SERVER:

@@ -61,7 +61,7 @@ if ("TEST" === sTESTING) {
   var sEncrypted_base64 = byzcrypto0.sEncryptPrivate_base64(sText);
   var sDecrypted = byzcrypto0.sDecryptPublic(0, sEncrypted_base64);
   if (sDecrypted === sText) {
-    console.log("###2 ok:" + sDecrypted);
+    console.log("ok:" + sDecrypted);
   } else {
     console.log("BAD:" + sDecrypted);
   }

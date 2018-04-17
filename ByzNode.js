@@ -43,9 +43,9 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
 };
 
 // Create and encrypt (sign) item with data-payload in own log.
-// In production, the data payload should probably be a hash relating back to an original record that is delivered outside of this consensus system.
 ByzNode.prototype.CreateLog = function(a_sData_SafeCharacters) {
   var me = this;
+  // In production, the data payload should probably be a hash relating back to an original record that is delivered outside of this consensus system.
   var as = a_sData_SafeCharacters.split("^");
   var sReason = ' Real data, so log "';
   if (1 < as.length) {
@@ -190,6 +190,7 @@ ByzNode.prototype._isHark_Open = function(a_sLetter) {
   return 0;
 };
 
+// Verify plaintext and encrypted messages match.
 ByzNode.prototype._isHark_Open_Verify = function(a_sLetter, sDecrypted, iCreator, iLogAt, when, sData) {
   var me = this;
   var as = sDecrypted.split(",");

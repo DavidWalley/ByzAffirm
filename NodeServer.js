@@ -42,13 +42,20 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
     me.HandleRequest(a, b);
   });
   me._httpserver.listen(me._isPort, function() {
-    console.log("**50 " + a_sName + " started: http://localhost:" + me._isPort);
+    me._Log("started: http://localhost:" + me._isPort);
   });
   
   setTimeout(function() {
     me.ONtICK();
-  }, 100 + 1000 * a_iWhich);
+  }, 100 + 500 * a_iWhich);
   
+  return true;
+};
+
+// Log message to console.
+NodeServer.prototype._Log = function(a_sText) {
+  var me = this;
+  console.log(" +" + me._sName + " " + g.whenNow_ms() + " " + a_sText);
   return true;
 };
 
@@ -78,13 +85,13 @@ NodeServer.prototype._sHandleRequest_ReplyToPost = function(a_sHowMuchTheyKnow) 
   return me._byznode.sGetNewsForThem(a_sHowMuchTheyKnow);
 };
 
-// PERIODIC:
+// Periodic routine:
 NodeServer.prototype.ONtICK = function() {
   var me = this;
   me._ticks++;
   var iOther = 0;
   do {
-    iOther = Math.floor(G.dRANDOM(0, me._nNodes)) + NodeServer.nROOTpORT;
+    iOther = Math.floor(g.dRandom(0, me._nNodes)) + NodeServer.nROOTpORT;
   } while (iOther === me._isPort);
   var s = me._byznode.sHowMuchIKnow();
   me._OnTick_MakeRequest("localhost", "/?igot", iOther, s);
@@ -143,7 +150,7 @@ NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, 
     });
     a_httpresponse.on("end", function() {
       if ("" !== sBuffer) {
-        console.log("**52 " + sRequestNotes + " <-- " + G.sSHRINK(sBuffer));
+        me._Log("52 " + sRequestNotes + " <-- " + G.sSHRINK(sBuffer));
         me._byznode.Hark(sBuffer);
       }
     });
@@ -154,4 +161,3 @@ NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, 
 };
 
 exports.nodeserverNEW = NodeServer.nodeserverNEW;
-

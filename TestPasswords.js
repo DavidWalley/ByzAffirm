@@ -21,7 +21,7 @@ Passwords.prototype._bRenew = function() {
   return true;
 };
 
-// Get a (test) public key.
+// Get a (test) public or private key.
 Passwords.sKEY = function(a_bPublicNotPrivate, a_iNode) {
   switch(a_iNode) {
     case 0:
@@ -68,4 +68,3 @@ Passwords.sKEY = function(a_bPublicNotPrivate, a_iNode) {
 };
 
 exports.sKEY = Passwords.sKEY;
-

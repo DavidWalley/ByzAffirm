@@ -1,4 +1,3 @@
-
 // G.js - General Purpose JavaScript routines. Global, polluting, but handy code conveniences.
 // (c)2018 David C. Walley, MIT license.
 
@@ -6,6 +5,7 @@
 function G() {
   // Private variables:
   this._whenFakeOffset;
+  this._nTestRandomSeed;
 }
 
 // Factory constructor of instance of this class.
@@ -21,6 +21,7 @@ G.gNEW = function() {
 G.prototype._bRenew = function() {
   var me = this;
   me._whenFakeOffset = 0;
+  me._nTestRandomSeed = 0;
   return true;
 };
 
@@ -79,8 +80,11 @@ G.prototype.whenNow_ms = function() {
 };
 
 // Generate a random number within a given range.
-G.dRANDOM = function(a_nMin, a_nMax) {
-  return a_nMin + (a_nMax - a_nMin) * Math.random();
+G.prototype.dRandom = function(a_nMin, a_nMax) {
+  var me = this;
+  me._nTestRandomSeed++;
+  var x = Math.sin(me._nTestRandomSeed) * 10000;
+  return a_nMin + (a_nMax - a_nMin) * (x - Math.floor(x));
 };
 
 // Modulus, fixes JavaScript's non-mathematical definition of modulus operation in negative numbers
@@ -152,10 +156,9 @@ exports.sTYPE = G.sTYPE;
 exports.whenNow_s = G.prototype.whenNow_s;
 exports.whenNowTo_ms = G.prototype.whenNowTo_ms;
 exports.whenNow_ms = G.prototype.whenNow_ms;
-exports.dRANDOM = G.dRANDOM;
+exports.dRandom = G.prototype.dRandom;
 exports.dMOD = G.dMOD;
 exports.sFORM = G.sFORM;
 exports.dFIX = G.dFIX;
 exports.sFIX = G.sFIX;
 exports.sSHRINK = G.sSHRINK;
-

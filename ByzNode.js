@@ -42,6 +42,13 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   return true;
 };
 
+// Log message to console.
+ByzNode.prototype._Log = function(a_sText) {
+  var me = this;
+  console.log(" >" + me._sName + " " + g.whenNow_ms() + " " + a_sText);
+  return true;
+};
+
 // Create and encrypt (sign) item with data-payload in own log.
 ByzNode.prototype.CreateLog = function(a_sData_SafeCharacters) {
   var me = this;
@@ -55,11 +62,11 @@ ByzNode.prototype.CreateLog = function(a_sData_SafeCharacters) {
     var iNode = +as[1];
     var iAt = +as[2];
     if (iNode < 0 || me._a2sLogs.length <= iNode || iAt < 0 || me._a2sLogs[iNode].length <= iAt) {
-      console.log("**09 " + me._sName + " This should not happen.");
+      me._Log("09 This should not happen.");
       return false;
     }
     if (0 <= me._a2sLogs[iNode][iAt].indexOf("^")) {
-      console.log("**10 " + me._sName + ' Drop link to link "' + a_sData_SafeCharacters + '".');
+      me._Log("10 Drop link to link '" + a_sData_SafeCharacters + "'.");
       return true;
     }
   }
@@ -67,7 +74,7 @@ ByzNode.prototype.CreateLog = function(a_sData_SafeCharacters) {
   var s = me._iWhich + "," + me._a2sLogs[me._iWhich].length + "," + g.whenNow_ms() + ', "' + a_sData_SafeCharacters + '"';
   var sEncrypted = me._byzcrypto.sEncryptPrivate_base64(s);
   me._a2sLogs[me._iWhich].push(s + ", " + sEncrypted);
-  console.log("**11 " + me._sName + ' Created "' + sReason + ",>" + s + " " + G.sSHRINK(sEncrypted) + "<" + me.sListOfMyLogs());
+  me._Log('11 Created "' + sReason + ",>" + s + " " + G.sSHRINK(sEncrypted) + "<" + me.sListOfMyLogs());
   return true;
 };
 
@@ -109,7 +116,7 @@ ByzNode.prototype.sGetNewsForThem = function(a_sHowMuchTheyKnow) {
   var r_s = "";
   var as = a_sHowMuchTheyKnow.split(",");
   if (as.length < 2) {
-    console.log("Oops: " + me._sName + " " + JSON.stringify(as));
+    me._Log("Oops: " + me._sName + " " + JSON.stringify(as));
     return "Error";
   }
   var iOther = parseInt(as[0], 10);
@@ -139,7 +146,7 @@ ByzNode.prototype.Hark = function(a_sSackOfLetters) {
   do {
     nDebugLimit--;
     if (nDebugLimit < 0) {
-      console.log("Ooooooops");
+      me._Log("Ooooooops");
       if (!false) {
         throw new Error("ASSERTION: Oooooops");
       }
@@ -173,7 +180,7 @@ ByzNode.prototype._isHark_Open = function(a_sLetter) {
   if (0 !== isResult) {
     return isResult;
   }
-  console.log("**37 " + me._sName + " OK {" + G.sSHRINK(a_sLetter) + '} = "^' + iCreator + "^" + iLogAt + '".');
+  me._Log("37 OK {" + G.sSHRINK(a_sLetter) + '} = "^' + iCreator + "^" + iLogAt + '".');
   as = a_sLetter.split("^");
   var sReason = "???";
   if (as.length <= 1) {
@@ -182,7 +189,7 @@ ByzNode.prototype._isHark_Open = function(a_sLetter) {
     if (+as[1] !== me._iWhich) {
       sReason = "Different " + as[1] + " != " + me._iWhich + ", so go ahead.";
     } else {
-      console.log("**38 " + me._sName + " NOT logging this, links back to self.");
+      me._Log("38 NOT logging this, links back to self.");
       return -9;
     }
   }
@@ -195,24 +202,24 @@ ByzNode.prototype._isHark_Open_Verify = function(a_sLetter, sDecrypted, iCreator
   var me = this;
   var as = sDecrypted.split(",");
   if (+as[0].trim() !== iCreator) {
-    console.log("##30 " + me._sName + " Error >" + as[0] + "<>" + iCreator + "<");
+    me._Log("30 Error >" + as[0] + "<>" + iCreator + "<");
     return -2;
   }
   if (+as[1].trim() !== iLogAt) {
-    console.log("##31 " + me._sName + " Error >" + as[1] + "<>" + iLogAt + "<");
+    me._Log("31 Error >" + as[1] + "<>" + iLogAt + "<");
     return -3;
   }
   if (+as[2].trim() !== when) {
-    console.log("##32 " + me._sName + " Error >" + as[2] + "<>" + when + "<");
+    me._Log("32 Error >" + as[2] + "<>" + when + "<");
     return -4;
   }
   if (as[3].trim() !== sData) {
-    console.log("##33 " + me._sName + " Error >" + as[3] + "<>" + sData + "<");
+    me._Log("33 Error >" + as[3] + "<>" + sData + "<");
     return -5;
   }
   
   me._a2sLogs[iCreator][iLogAt] = a_sLetter;
-  console.log("**35 " + me._sName + " --- logging " + iCreator + "," + iLogAt + "=" + G.sSHRINK(a_sLetter) + "<" + me.sListOfMyLogs());
+  me._Log("35 --- logging " + iCreator + "," + iLogAt + "=" + G.sSHRINK(a_sLetter) + "<" + me.sListOfMyLogs());
   // Check for link to make sure it is pointing to a valid, existing entry:
   if (iCreator < 0) {
     return -6;
@@ -232,4 +239,3 @@ ByzNode.prototype._isHark_Open_Verify = function(a_sLetter, sDecrypted, iCreator
 
 exports.byznodeNEW = ByzNode.byznodeNEW;
 exports.g = g;
-

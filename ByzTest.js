@@ -4,6 +4,7 @@
 console.log("ByzTest.js running under NODE");
 var NodeServer = require("./NodeServer.js");
 if ("undefined" === typeof g) {
+  // Global singleton general purpose routines and handy code conveniences.
   var G = require("./G.js");
   var g = G.g;
 }
@@ -27,25 +28,23 @@ ByzTest.byztestNEW = function(a_asNodeNames) {
 ByzTest.prototype._bRenew = function(a_asNodeNames) {
   var me = this;
   me._anodeserver = [];
+  // Set up some simulated server nodes.
   var n = a_asNodeNames.length;
   for (var i = 0; i < n; i++) {
     me._anodeserver[i] = NodeServer.nodeserverNEW(a_asNodeNames[i], i, n);
   }
-  
-  g.whenNowTo_ms(150000);
+  // Start clock with recognizable value.
+  g.whenNowTo_ms(1500000);
   me._Tell("1 Start All.");
-  me._ConsoleShowAll();
+  me._ShowAll();
   setTimeout(function() {
-    me._Tell('2 Cam creates "Data1".');
-    me._anodeserver[2].CreateLog("Data1");
-    me._ConsoleShowAll();
+    me._Tell('2 Dan creates "Dan1".');
+    me._anodeserver[3].CreateLog("Dan1");
+    me._ShowAll();
   }, 5000);
   setTimeout(function() {
-    me._ConsoleShowAll();
+    me._ShowAll();
   }, 10000);
-  setTimeout(function() {
-    me._ConsoleShowAll();
-  }, 15000);
   
   return true;
 };
@@ -58,11 +57,12 @@ ByzTest.prototype._Tell = function(a_sText) {
 };
 
 // Display this node's copy of the logs.
-ByzTest.prototype._ConsoleShowAll = function() {
+ByzTest.prototype._ShowAll = function() {
   var me = this;
   var n = me._anodeserver.length;
   for (var i = 0; i < n; i++) {
-    me._Tell("3 Logs at node " + i + ": " + me._anodeserver[i].sListOfMyLogs());
+    me._Tell("3.0 Logs at node " + i + ": " + me._anodeserver[i].sListOfMyLogs());
+    me._Tell("3.1: " + me._anodeserver[i].sListCertainty());
   }
   return true;
 };

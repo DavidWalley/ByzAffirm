@@ -1,7 +1,7 @@
 # ByzAffirm
 NOT Hashgraph (nor Blockchain) - Towards an Open Asynchronous Byzantine Fault Tolerant Consensus Algorithm
 
-tldr: A non-lawyer suggests Hashgraph patents may not be valid, and is working on a possible open alternative.
+tldr: A non-lawyer suggests Hashgraph patents may not be valid, and is doing preliminary tests on a working open alternative.
 
 **NOTE: There is only test code here, so far.**
 
@@ -67,3 +67,10 @@ As my first task, I want to write a simple demo of the above and see if it works
 - RSA cryptology for private-key encryption and public-key decryption is working. In future, this could be replaced with any private/public cryptographic scheme.
 - To do next: Re-implement all aspects of gossip protocol within node.js servers architecture.
 - Gossip protocol passed simplest test - logs not running away during basic test.
+- Gossip protocol working in 5 node test.
+- Determining range of timestamp from logged info is coded, and rough tests show it is working.
+
+## Bugs and TODOs
+- localhost testing fails when not connected to Internet, even though it should not be needed.
+- TODO: Test, test, test.
+- TODO: Write tests with misbehaving nodes, and run for extended times.

@@ -42,7 +42,7 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
     me.HandleRequest(a, b);
   });
   me._httpserver.listen(me._isPort, function() {
-    me._Tell("started: http://localhost:" + me._isPort);
+    me._Tell("50 Started: http://localhost:" + me._isPort);
   });
   
   setTimeout(function() {
@@ -73,6 +73,12 @@ NodeServer.prototype.sListOfMyLogs = function() {
   return me._byznode.sListOfMyLogs();
 };
 
+// Report known data payloads, timestamp, and the certainty of timestamp.
+NodeServer.prototype.sListCertainty = function() {
+  var me = this;
+  return me._byznode.sListCertainty();
+};
+
 // Wrapper for creating a new log item.
 NodeServer.prototype.CreateLog = function(a_s) {
   var me = this;
@@ -95,10 +101,12 @@ NodeServer.prototype.ONtICK = function() {
   } while (iOther === me._isPort);
   var s = me._byznode.sHowMuchIKnow();
   me._OnTick_MakeRequest("localhost", "/?igot", iOther, s);
-  if (me._ticks < 15) {
+  if (me._ticks < 1000) {
     setTimeout(function() {
       me.ONtICK();
-    }, 2000);
+    }, 500);
+  } else {
+    me._Tell("51 Shutting down periodic routine on " + me._isPort + ".");
   }
   return true;
 };

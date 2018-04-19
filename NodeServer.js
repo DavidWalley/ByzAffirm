@@ -42,7 +42,7 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
     me.HandleRequest(a, b);
   });
   me._httpserver.listen(me._isPort, function() {
-    me._Log("started: http://localhost:" + me._isPort);
+    me._Tell("started: http://localhost:" + me._isPort);
   });
   
   setTimeout(function() {
@@ -53,7 +53,7 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
 };
 
 // Log message to console.
-NodeServer.prototype._Log = function(a_sText) {
+NodeServer.prototype._Tell = function(a_sText) {
   var me = this;
   console.log(" +" + me._sName + " " + g.whenNow_ms() + " " + a_sText);
   return true;
@@ -150,7 +150,7 @@ NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, 
     });
     a_httpresponse.on("end", function() {
       if ("" !== sBuffer) {
-        me._Log("52 " + sRequestNotes + " <-- " + G.sSHRINK(sBuffer));
+        me._Tell("52 " + sRequestNotes + " <-- " + G.sSHRINK(sBuffer));
         me._byznode.Hark(sBuffer);
       }
     });

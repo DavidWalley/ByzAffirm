@@ -18,21 +18,21 @@ function ByzNode() {
 }
 
 // Factory constructor of instance of this class.
-ByzNode.byznodeNEW = function(a_sName, a_iWhich, a_nNodes) {
+ByzNode.byznodeNEW = function(a_sName, a_iNodeMe, a_nNodes) {
   var ob = new ByzNode;
-  if (!ob._bRenew(a_sName, a_iWhich, a_nNodes)) {
+  if (!ob._bRenew(a_sName, a_iNodeMe, a_nNodes)) {
     return null;
   }
   return ob;
 };
 
 // Initialize or reset object.
-ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
+ByzNode.prototype._bRenew = function(a_sName, a_iNodeMe, a_nNodes) {
   var me = this;
   me._sName = a_sName;
-  me._iWhich = a_iWhich;
+  me._iWhich = a_iNodeMe;
   me._nNodes = a_nNodes;
-  me._iNodeNext = a_iWhich;
+  me._iNodeNext = a_iNodeMe;
   me._byzcrypto = ByzCrypto.byzcryptoNEW(me._iWhich, me._nNodes);
   // For each node, initialize list of copies of encoded and signed message.
   me._a2sLogs = [];
@@ -43,7 +43,7 @@ ByzNode.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
 };
 
 // Log message to console.
-ByzNode.prototype._Log = function(a_sText) {
+ByzNode.prototype._Tell = function(a_sText) {
   var me = this;
   console.log(" >" + me._sName + " " + g.whenNow_ms() + " " + a_sText);
   return true;
@@ -62,11 +62,11 @@ ByzNode.prototype.CreateLog = function(a_sData_SafeCharacters) {
     var iNode = +as[1];
     var iAt = +as[2];
     if (iNode < 0 || me._a2sLogs.length <= iNode || iAt < 0 || me._a2sLogs[iNode].length <= iAt) {
-      me._Log("09 This should not happen.");
+      me._Tell("09 This should not happen.");
       return false;
     }
     if (0 <= me._a2sLogs[iNode][iAt].indexOf("^")) {
-      me._Log("10 Drop link to link '" + a_sData_SafeCharacters + "'.");
+      me._Tell("10 Drop link to link '" + a_sData_SafeCharacters + "'.");
       return true;
     }
   }
@@ -74,7 +74,7 @@ ByzNode.prototype.CreateLog = function(a_sData_SafeCharacters) {
   var s = me._iWhich + "," + me._a2sLogs[me._iWhich].length + "," + g.whenNow_ms() + ', "' + a_sData_SafeCharacters + '"';
   var sEncrypted = me._byzcrypto.sEncryptPrivate_base64(s);
   me._a2sLogs[me._iWhich].push(s + ", " + sEncrypted);
-  me._Log('11 Created "' + sReason + ",>" + s + " " + G.sSHRINK(sEncrypted) + "<" + me.sListOfMyLogs());
+  me._Tell('11 Created "' + sReason + ",>" + s + " " + G.sSHRINK(sEncrypted) + "<" + me.sListOfMyLogs());
   return true;
 };
 
@@ -116,7 +116,7 @@ ByzNode.prototype.sGetNewsForThem = function(a_sHowMuchTheyKnow) {
   var r_s = "";
   var as = a_sHowMuchTheyKnow.split(",");
   if (as.length < 2) {
-    me._Log("Oops: " + me._sName + " " + JSON.stringify(as));
+    me._Tell("12 Oops: " + me._sName + " " + JSON.stringify(as));
     return "Error";
   }
   var iOther = parseInt(as[0], 10);
@@ -135,106 +135,97 @@ ByzNode.prototype.sGetNewsForThem = function(a_sHowMuchTheyKnow) {
 };
 
 // Process all important incoming messages.
-ByzNode.prototype.Hark = function(a_sSackOfLetters) {
+ByzNode.prototype.Hark = function(a_sItems) {
   var me = this;
-  var is = 0;
-  var asLetter = a_sSackOfLetters.split("|");
+  var asItems = a_sItems.split("|");
+  var sItem = "";
   
-  var n = asLetter.length;
-  var bMoreToDo = true;
-  var nDebugLimit = 1;
-  do {
-    nDebugLimit--;
-    if (nDebugLimit < 0) {
-      me._Log("Ooooooops");
-      if (!false) {
-        throw new Error("ASSERTION: Oooooops");
+  var as = [];
+  me._Tell("13 " + me.sListOfMyLogs());
+  var anLengthWas = [];
+  var i = 0;
+  for (; i < me._nNodes; i++) {
+    anLengthWas[i] = me._a2sLogs[i].length;
+  }
+  var nItems = asItems.length;
+  for (i = 1; i < nItems; i++) {
+    sItem = asItems[i].trim();
+    me._Tell("14 >" + G.sSHRINK(sItem) + "<");
+    if ("" === sItem) {
+      me._Tell("15");
+      continue;
+    }
+    
+    as = sItem.split(",");
+    if (as.length < 5) {
+      me._Tell("16");
+      continue;
+    }
+    var iNode = +as[0];
+    var iLogAt = +as[1];
+    var when = +as[2];
+    var sData = as[3].trim();
+    if (iNode < 0 || me._a2sLogs.length <= iNode) {
+      me._Tell("17");
+      continue;
+    }
+    if (iLogAt < 0) {
+      me._Tell("18");
+      continue;
+    }
+    // Verify authorship. If unable to verify authorship, then move on.
+    var sPlain = me._byzcrypto.sDecryptPublic(iNode, as[4].trim());
+    as = sPlain.split(",");
+    if (+as[0].trim() !== iNode) {
+      me._Tell("19.1 Error >" + as[0] + "<>" + iNode + "<");
+      continue;
+    }
+    if (+as[1].trim() !== iLogAt) {
+      me._Tell("19.2 Error >" + as[1] + "<>" + iLogAt + "<");
+      continue;
+    }
+    if (+as[2].trim() !== when) {
+      me._Tell("19.3 Error >" + as[2] + "<>" + when + "<");
+      continue;
+    }
+    if (as[3].trim() !== sData) {
+      me._Tell("19.4 Error >" + as[3] + "<>" + sData + "<");
+      continue;
+    }
+    // Pad log if needed.
+    while (me._a2sLogs[iNode].length <= iLogAt) {
+      me._a2sLogs[iNode].push("x");
+    }
+    
+    if ("x" === me._a2sLogs[iNode][iLogAt]) {
+      me._a2sLogs[iNode][iLogAt] = sItem;
+    } else {
+      if (me._a2sLogs[iNode][iLogAt] === sItem) {
+        me._Tell("20 ??? Repeat.");
+      } else {
+        me._Tell("21 ??? Over-writing.");
       }
     }
-    bMoreToDo = false;
-    for (var i = 1; i < n; i++) {
-      is = me._isHark_Open(asLetter[i].trim());
-      if (0 < is) {
-        bMoreToDo = true;
+    me._Tell("22 " + me.sListOfMyLogs());
+  }
+  for (i = 0; i < me._nNodes; i++) {
+    var n = me._a2sLogs[i].length;
+    for (var j = anLengthWas[i]; j < n; j++) {
+      s = me._a2sLogs[i][j];
+      if ("x" === s) {
+        me._a2sLogs[i].length = j;
+        break;
+      }
+      as = s.split(",");
+      if (me._a2sLogs[+as[0]][+as[1]] === s) {
+        me.CreateLog("^" + +as[0] + "^" + +as[1]);
+      } else {
+        me._Tell("23 ???" + G.sSHRINK(s) + "?");
       }
     }
-  } while (bMoreToDo);
+  }
   
   return true;
-};
-
-// Process one important incoming message - put it in log.
-ByzNode.prototype._isHark_Open = function(a_sLetter) {
-  var me = this;
-  if ("" === a_sLetter) {
-    return -1;
-  }
-  var as = a_sLetter.split(",");
-  var iCreator = +as[0];
-  var iLogAt = +as[1];
-  var when = +as[2];
-  var sData = as[3].trim();
-  var sAllEncrypted = as[4].trim();
-  var sDecrypted = me._byzcrypto.sDecryptPublic(iCreator, sAllEncrypted);
-  var isResult = me._isHark_Open_Verify(a_sLetter, sDecrypted, iCreator, iLogAt, when, sData);
-  if (0 !== isResult) {
-    return isResult;
-  }
-  me._Log("37 OK {" + G.sSHRINK(a_sLetter) + '} = "^' + iCreator + "^" + iLogAt + '".');
-  as = a_sLetter.split("^");
-  var sReason = "???";
-  if (as.length <= 1) {
-    sReason = "No caret, links to data, so go ahead.";
-  } else {
-    if (+as[1] !== me._iWhich) {
-      sReason = "Different " + as[1] + " != " + me._iWhich + ", so go ahead.";
-    } else {
-      me._Log("38 NOT logging this, links back to self.");
-      return -9;
-    }
-  }
-  me.CreateLog("^" + iCreator + "^" + iLogAt + " ");
-  return 0;
-};
-
-// Verify plaintext and encrypted messages match.
-ByzNode.prototype._isHark_Open_Verify = function(a_sLetter, sDecrypted, iCreator, iLogAt, when, sData) {
-  var me = this;
-  var as = sDecrypted.split(",");
-  if (+as[0].trim() !== iCreator) {
-    me._Log("30 Error >" + as[0] + "<>" + iCreator + "<");
-    return -2;
-  }
-  if (+as[1].trim() !== iLogAt) {
-    me._Log("31 Error >" + as[1] + "<>" + iLogAt + "<");
-    return -3;
-  }
-  if (+as[2].trim() !== when) {
-    me._Log("32 Error >" + as[2] + "<>" + when + "<");
-    return -4;
-  }
-  if (as[3].trim() !== sData) {
-    me._Log("33 Error >" + as[3] + "<>" + sData + "<");
-    return -5;
-  }
-  
-  me._a2sLogs[iCreator][iLogAt] = a_sLetter;
-  me._Log("35 --- logging " + iCreator + "," + iLogAt + "=" + G.sSHRINK(a_sLetter) + "<" + me.sListOfMyLogs());
-  // Check for link to make sure it is pointing to a valid, existing entry:
-  if (iCreator < 0) {
-    return -6;
-  }
-  if (me._a2sLogs.length <= iCreator) {
-    return -7;
-  }
-  if (iLogAt < 0) {
-    return -8;
-  }
-  if (me._a2sLogs[iCreator].length <= iLogAt) {
-    // Report that we will have to try this again later.
-    return 1;
-  }
-  return 0;
 };
 
 exports.byznodeNEW = ByzNode.byznodeNEW;

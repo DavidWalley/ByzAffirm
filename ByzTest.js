@@ -33,10 +33,10 @@ ByzTest.prototype._bRenew = function(a_asNodeNames) {
   }
   
   g.whenNowTo_ms(150000);
-  me._Log("1 Start All.");
+  me._Tell("1 Start All.");
   me._ConsoleShowAll();
   setTimeout(function() {
-    me._Log('2 Cam creates "Data1".');
+    me._Tell('2 Cam creates "Data1".');
     me._anodeserver[2].CreateLog("Data1");
     me._ConsoleShowAll();
   }, 5000);
@@ -51,7 +51,7 @@ ByzTest.prototype._bRenew = function(a_asNodeNames) {
 };
 
 // Log message to console.
-ByzTest.prototype._Log = function(a_sText) {
+ByzTest.prototype._Tell = function(a_sText) {
   var me = this;
   console.log("+ Test " + g.whenNow_ms() + " " + a_sText);
   return true;
@@ -62,9 +62,9 @@ ByzTest.prototype._ConsoleShowAll = function() {
   var me = this;
   var n = me._anodeserver.length;
   for (var i = 0; i < n; i++) {
-    me._Log("3 Logs at node " + i + ": " + me._anodeserver[i].sListOfMyLogs());
+    me._Tell("3 Logs at node " + i + ": " + me._anodeserver[i].sListOfMyLogs());
   }
   return true;
 };
 
-var g_biztest = ByzTest.byztestNEW(["ann", "bob", "cam"]);
+var g_biztest = ByzTest.byztestNEW(["ann", "bob", "cam", "dan", "eve"]);

@@ -61,16 +61,22 @@ I think the above may be enough to achieve the goal, but I need to write some co
 As my first task, I want to write a simple demo of the above and see if it works and/or what needs modification. I won't be implementing a full, working version yet, just something to help visualize and test how the scheme will work.
 
 ## Progress
-- Changed name to ByzAffirm (from ByzAgree) which did not yield any results in Google on 2018-04-13.
-- Gossip communications protocol and debug tracing working and preliminary testing is working.
 - Ability to set up node.js test nodes on localhost, using sequential ports 8080, 8081.... While not required for testing, this architecture is closer to what the final version will be like.
 - RSA cryptology for private-key encryption and public-key decryption is working. In future, this could be replaced with any private/public cryptographic scheme.
-- To do next: Re-implement all aspects of gossip protocol within node.js servers architecture.
-- Gossip protocol passed simplest test - logs not running away during basic test.
-- Gossip protocol working in 5 node test.
+- Gossip communications protocol is working.
 - Determining range of timestamp from logged info is coded, and rough tests show it is working.
 
 ## Bugs and TODOs
 - localhost testing fails when not connected to Internet, even though it should not be needed.
 - TODO: Test, test, test.
 - TODO: Write tests with misbehaving nodes, and run for extended times.
+- TODO: Set up a test copy of the real Hashgraph algorithm for comparison.
+
+## Next Steps
+Currently, the algorithm looks to be working if all nodes are working. The final accepted timestamp is currently defined to be the median of timestamps when nodes first became aware of a new message. With this definition and over half of all nodes reporting, it is possible to determine a range of values that the eventual consensus is guaranteed to be within. As more nodes report, the range gets smaller until reaching a single value, which is guaranteed to occur when all nodes report. This now appears to be working (but you have to wade through the console output to verify it).
+
+Determining which of two transactions occurred first is almost always easy, because if all honest nodes make every effort to ensure that their system clocks are accurate and to communicate promptly, then the ranges of possible time values are very narrow and converge quickly. However, it is possible, though unlikely, that the order of two messages comes down to a dead heat requiring the last few node's to decide. It is unlikely that this can exploited in any given transaction, however, with thousands or millions of transactions per second, it is a certainty that a corrupt node could wait until a close tie arises naturally, and then corruptly cast a vote.
+
+One obvious way to prevent this problem is to remove the advantage of waiting by ignoring slow nodes. Perhaps a change to the definition will do - use the median of the first x% of nodes to report (where x is probably 51 or 67).
+
+Note: I know that reading more about Hashgraph probably gives an answer to the above, but I am avoiding doing this. Reading the 30 year-old patents may also give the answer, which would be fine, so I will do this when I run out of obvious things to try.

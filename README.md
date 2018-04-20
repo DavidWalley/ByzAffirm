@@ -41,7 +41,7 @@ I am certain that the information contained in a DAG can be communicated in some
 
 Writing any software is hard and details take time and effort, but I think it is possible to write a replacement for Hashgraph with no reference to the gossip-about-gossip idea, and everything else appears to this non-lawyer to be obvious or in the public domain.
 
-A rewrite should not be anywhere near as difficult as the task that originally faced Baird. For one thing, we know that one solution is possible. Where he started when no working solution was known to exist, we start with one example and look for a second. The legal issues may be more difficult than the programming.
+A rewrite should not be anywhere near as difficult as the task that originally faced Baird. For one thing, we know that one solution is possible. He started when no working solution was known, we start with a working example and look for a second. The legal issues may be more difficult than the programming issues.
 
 Baird started with the admirable idea of mathematically proving the validity of every step. We don't need to prove anything - yet. We can test our solution (but not prove it) at every step. If sufficient testing shows that a new solution gives the same results as Hashgraph, then it would definitely be worth proving it mathematically some day.
 
@@ -53,7 +53,7 @@ I think the following are reasonably obvious to a programmer skilled in the art:
 - Messages are passed around using gossip protocol.
 - To avoid redundant communications, each node actively maintains a copy of as much of every other node's log as possible.
 - Compress logs by not duplicating information when a reference to another log entry will do.
-- Compress logs by not storing information that can be shown to have no influence or further influence on reaching our goal.
+- Compress logs by not storing information that can be shown to have no further influence on reaching our goal.
 - When queried, a node replies with the data-payload, the best estimate of when the message became well-known, and whether enough information is on-hand to finalize the ordering of the message or not, using Byzantine Fault Tolerant algorithms described in expired patents only.
 
 I think the above may be enough to achieve the goal, but I need to write some code now.
@@ -75,8 +75,8 @@ As my first task, I want to write a simple demo of the above and see if it works
 ## Next Steps
 Currently, the algorithm looks to be working if all nodes are working. The final accepted timestamp is currently defined to be the median of timestamps when nodes first became aware of a new message. With this definition and over half of all nodes reporting, it is possible to determine a range of values that the eventual consensus is guaranteed to be within. As more nodes report, the range gets smaller until reaching a single value, which is guaranteed to occur when all nodes report. This now appears to be working (but you have to wade through the console output to verify it).
 
-Determining which of two transactions occurred first is almost always easy, because if all honest nodes make every effort to ensure that their system clocks are accurate and to communicate promptly, then the ranges of possible time values are very narrow and converge quickly. However, it is possible, though unlikely, that the order of two messages comes down to a dead heat requiring the last few node's to decide. It is unlikely that this can be exploited in any given transaction, however, with thousands or millions of transactions per second, it is a certainty that a close tie will arises eventually, and a corrupt node could wait for one, take a bit of time to decide which way would be best for itself, and cast a corrupt vote.
+Determining which of two transactions occurred first is almost always easy, because if all honest nodes make every effort to ensure that their system clocks are accurate and to communicate promptly, then the ranges of possible time values are very narrow and converge quickly. However, it is possible, though unlikely, that the order of two messages comes down to a dead heat requiring the last few node's to decide. It is unlikely that this can be exploited in any given transaction, however, with thousands or millions of transactions per second, it is a certainty that a close tie will arise eventually, and a corrupt node could wait for one, take a bit of time to decide which way would be best for itself, and cast a corrupt vote.
 
-One obvious way to prevent this problem is to remove the advantage of waiting by ignoring the timestamps of slow nodes. Perhaps a change to the definition will do - use the median of the first x% of nodes to report (where x is probably 51 or 67). My next step is to work through the consequences of such a definition.
+One obvious way to prevent this problem is to remove the advantage of waiting by ignoring the timestamps of slow nodes. Perhaps a change to the definition will do - use the median of the first x% of nodes to report (where x is probably 51 or 67, but less than the 100% currently implemented). My next step is to work through the consequences of such a definition.
 
 Note: I know that reading more about Hashgraph probably gives an answer to the above, but I am avoiding doing this. Reading the 30 year-old patents may also give the answer, which would be fine, so I will do this when I run out of obvious things to try.

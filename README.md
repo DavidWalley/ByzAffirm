@@ -35,7 +35,7 @@ According to Baird, Hashgraph is based on: Directed Acyclic Graphs (DAGs, the "g
 - According to Baird, Byzantine voting algorithms are fully described in several 30 year-old patents.
 - Gossip-about-gossip is a radically efficient simplification which required Baird's genius insight, but I think it may not be necessary. According to Baird, his insight allows a history of communications (the DAG) to be reconstructed, which is an important result, while only requiring a very small additional overhead. This is the idea I am most eager to avoid.
 - Hashing is a standard process used in programming.
-- Virtual voting may be a key idea, but is well understood, especially in political circles.
+- Virtual voting may be a key idea, but is well understood, especially in political circles. For example, the Ontario Progressive Conservative Party recently elected a new leader on the third round of "preferential voting" conducted by automated algorithm after the first round's simple count did not give a clear winner. (There was a lot of delay and chaos due to human interference, but the algorithm's result was eventually accepted.) As far as I can tell, the algorithm is but one example of "virtual voting". Non-automated virtual voting may be traced back as far as Condorcet in 1793 (research needed here).
 
 I am certain that the information contained in a DAG can be communicated in some other, perhaps inefficient, way. Any other way would certainly be less brilliant, but does it matter? Hashgraph claims hundreds of transactions in a hundredth of a second. Suppose it took 2 hundredths of a second - would anyone care? Perhaps industrial-scale use would require two computers to do what Hashgraph can do with one - does that matter in the context of a multi-million dollar opportunity?
 
@@ -80,3 +80,8 @@ Determining which of two transactions occurred first is almost always easy, beca
 One obvious way to prevent this problem is to remove the advantage of waiting by ignoring the timestamps of slow nodes. Perhaps a change to the definition will do - use the median of the first x% of nodes to report (where x is probably 51 or 67, but less than the 100% currently implemented). My next step is to work through the consequences of such a definition.
 
 Note: I know that reading more about Hashgraph probably gives an answer to the above, but I am avoiding doing this. Reading the 30 year-old patents may also give the answer, which would be fine, so I will do this when I run out of obvious things to try.
+
+## How You Can Help
+- Spread the word. No rush though - Baird's group is spending millions of dollars promoting Hashgraph over Blockchain, which is not a bad thing for ByzAffirm.
+- Research into the history of virtual voting systems might be useful.
+- Not ready yet, but raising or preparing to raise money for legal opinions could be useful.

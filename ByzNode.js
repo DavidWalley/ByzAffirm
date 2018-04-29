@@ -45,7 +45,7 @@ ByzNode.prototype._bRenew = function(a_sName, a_iNodeMe, a_nNodes) {
 // Display message in console.
 ByzNode.prototype._Tell = function(a_sText) {
   var me = this;
-  console.log(" >" + me._sName + " " + g.whenNow_ms() + " " + a_sText);
+  console.log("." + me._sName + " " + g.whenNow_ms() + " " + a_sText);
   return true;
 };
 
@@ -58,30 +58,28 @@ ByzNode.prototype.CreateLog = function(a_sData_base64) {
     if (!(as.length === 3)) {
       throw new Error("ASSERTION: Should be exactly 2 carets.");
     }
-    var iNode = +as[1];
+    var iItemsNode = +as[1];
     var iAt = +as[2];
-    if (iNode < 0 || me._a2sLogs.length <= iNode || iAt < 0 || me._a2sLogs[iNode].length <= iAt) {
+    if (iItemsNode < 0 || me._a2sLogs.length <= iItemsNode || iAt < 0 || me._a2sLogs[iItemsNode].length <= iAt) {
       me._Tell("10 This should not happen.");
       return false;
     }
-    if (0 <= me._a2sLogs[iNode][iAt].indexOf("^")) {
-      me._Tell("11 Drop link to link '" + a_sData_base64 + "'.");
+    if (0 <= me._a2sLogs[iItemsNode][iAt].indexOf("^")) {
+      me._Tell("drops link-to-link '" + a_sData_base64 + "'.");
       return true;
     }
   }
   // Create a log item:
-  var s = me._iWhich + "," + me._a2sLogs[me._iWhich].length + "," + g.whenNow_ms() + ', "' + a_sData_base64 + '"';
+  var s = me._iWhich + "," + me._a2sLogs[me._iWhich].length + "," + g.whenNow_ms() + "," + a_sData_base64;
   var sEncrypted = me._byzcrypto.sEncryptPrivate_base64(s);
   me._a2sLogs[me._iWhich].push(s + ", " + sEncrypted);
-  me._Tell("12.0 Created >" + s + " " + G.sSHRINK(sEncrypted) + "<" + me.sListOfMyLogs());
-  me._Tell("12.1: " + me.sListCertainty());
   return true;
 };
 
 // Create a message to report sizes of all logs kept by this node, for telling another node about extent of what is known.
 ByzNode.prototype.sHowMuchIKnow = function() {
   var me = this;
-  var r_s = me._sName + " ";
+  var r_s = me._sName;
   var n = me._a2sLogs.length;
   for (var i = 0; i < n; i++) {
     r_s += "," + me._a2sLogs[i].length;
@@ -92,7 +90,7 @@ ByzNode.prototype.sHowMuchIKnow = function() {
 // Report everything this node knows (for debug mostly).
 ByzNode.prototype.sListOfMyLogs = function() {
   var me = this;
-  var r_s = "I, " + me._sName + ", know:";
+  var r_s = me._sName + " has heard:";
   var n = me._a2sLogs.length;
   var m;
   var j;
@@ -107,68 +105,66 @@ ByzNode.prototype.sListOfMyLogs = function() {
     }
   }
   
+  r_s += "\n  " + me.sListOfMyLogs_Certainty();
   return r_s;
 };
 
 // Report known data payloads, timestamp, and the certainty of timestamp.
-ByzNode.prototype.sListCertainty = function() {
+ByzNode.prototype.sListOfMyLogs_Certainty = function() {
   var me = this;
-  var r_s = "* * * * * * * *I, " + me._sName + ", am certain:";
+  var r_s = "thinks:";
   
-  for (var i = 0; i < me._nNodes; i++) {
-    var nSize = me._a2sLogs[i].length;
-    for (var j = 0; j < nSize; j++) {
-      var s = me._a2sLogs[i][j];
+  for (var iNode = 0; iNode < me._nNodes; iNode++) {
+    var nSize = me._a2sLogs[iNode].length;
+    for (var iItem = 0; iItem < nSize; iItem++) {
+      var s = me._a2sLogs[iNode][iItem];
       var as = s.split(",");
-      var iNode = +as[0];
-      var iLogAt = +as[1];
-      var when = +as[2];
-      var sData = as[3].trim();
-      var sEncrypted = as[4].trim();
-      as = sData.split("^");
-      if (1 === as.length) {
-        var sTarget = '"^' + iNode + "^" + iLogAt + '"';
-        r_s += "\n***A" + " i,j=" + i + "," + j + " " + G.sSHRINK(s) + "*** ";
-        var awhen = [when];
-        for (var k = 0; k < me._nNodes; k++) {
-          var mSize = me._a2sLogs[k].length;
-          for (var l = 0; l < mSize; l++) {
-            var asT = me._a2sLogs[k][l].split(",");
-            if (sTarget === asT[3].trim()) {
-              r_s += "\n***C " + +asT[2] + "***";
-              awhen.push(+asT[2]);
-            }
+      var iItemsNode = +as[0];
+      var iItemsItem = +as[1];
+      var whenItem = +as[2];
+      var sItemsData = as[3].trim();
+      as = sItemsData.split("^");
+      if (1 !== as.length) {
+        continue;
+      }
+      var sTarget = "^" + iItemsNode + "^" + iItemsItem;
+      var awhen = [];
+      awhen.push(whenItem);
+      for (var i = 0; i < me._nNodes; i++) {
+        var mSize = me._a2sLogs[i].length;
+        for (var j = 0; j < mSize; j++) {
+          var asIJ = me._a2sLogs[i][j].split(",");
+          if (sTarget === asIJ[3].trim()) {
+            awhen.push(+asIJ[2]);
           }
         }
-        var nLength = awhen.length;
-        if (nLength < 1) {
-          me._Tell("!!! Error.");
-        } else {
-          if (2 * nLength <= me._nNodes) {
-            me._Tell("*** Mean");
-            var whenSum = 0;
-            for (var m = 0; m < nLength; m++) {
-              whenSum += awhen[m];
-            }
-            r_s += "\n" + "*** Mean = " + whenSum / nLength;
-          } else {
-            awhen.sort();
-            var iSkip = Math.floor((nLength - 1) * 0.5);
-            r_s += "\n*** Range " + iSkip;
-            r_s += "\n" + "*** [" + awhen.toString() + "]";
-            r_s += "\n" + "*** " + awhen[iSkip] + " ... " + awhen[nLength - iSkip - 1];
+      }
+      var nLength = awhen.length;
+      r_s += "\n    " + iNode + "," + iItem + ": [" + awhen.toString() + "] ";
+      if (nLength < 1) {
+        me._Tell("!!! Error.");
+      } else {
+        if (nLength <= me._nNodes * 0.5) {
+          var whenSum = 0;
+          for (var m = 0; m < nLength; m++) {
+            whenSum += awhen[m];
           }
+          r_s += "is about " + whenSum / nLength;
+        } else {
+          awhen.sort();
+          var iSkip = Math.floor((nLength - 1) * 0.5);
+          r_s += "-> " + awhen[iSkip] + "..." + awhen[nLength - iSkip - 1];
         }
       }
     }
   }
-  return r_s + "<<!";
+  return r_s + "!";
 };
 
 // Report what other node does not know, based on what they have said they have now.
 ByzNode.prototype.sGetNewsForThem = function(a_sHowMuchTheyKnow) {
   var me = this;
-  var r_s = "";
+  var r_s = me._sName + " replies ";
   var as = a_sHowMuchTheyKnow.split(",");
   if (as.length < 2) {
     me._Tell("13 Oops: " + me._sName + " " + JSON.stringify(as));
@@ -182,7 +178,7 @@ ByzNode.prototype.sGetNewsForThem = function(a_sHowMuchTheyKnow) {
     iOtherNodeAt = parseInt(as[i], 10);
     iIAmAt = me._a2sLogs[i - 1].length;
     for (var j = iOtherNodeAt; j < iIAmAt; j++) {
-      r_s += " | " + me._a2sLogs[i - 1][j];
+      r_s += "|" + me._a2sLogs[i - 1][j] + " ,<" + me._sName;
     }
   }
   
@@ -204,7 +200,7 @@ ByzNode.prototype.Hark = function(a_sItems) {
   var nItems = asItems.length;
   for (i = 1; i < nItems; i++) {
     sItem = asItems[i].trim();
-    me._Tell("14 >" + G.sSHRINK(sItem) + "<");
+    me._Tell("processes" + G.sSHRINK(sItem));
     if ("" === sItem) {
       me._Tell("15");
       continue;
@@ -215,34 +211,34 @@ ByzNode.prototype.Hark = function(a_sItems) {
       me._Tell("16");
       continue;
     }
-    var iNode = +as[0];
-    var iLogAt = +as[1];
-    var when = +as[2];
-    var sData = as[3].trim();
-    if (iNode < 0 || me._a2sLogs.length <= iNode) {
+    var iItemsNode = +as[0];
+    var iItemsItem = +as[1];
+    var whenItem = +as[2];
+    var sItemsData = as[3].trim();
+    if (iItemsNode < 0 || me._a2sLogs.length <= iItemsNode) {
       me._Tell("17");
       continue;
     }
-    if (iLogAt < 0) {
+    if (iItemsItem < 0) {
       me._Tell("18");
       continue;
     }
     // Verify authorship. If unable to verify authorship, then move on.
-    var sPlain = me._byzcrypto.sDecryptPublic(iNode, as[4].trim());
+    var sPlain = me._byzcrypto.sDecryptPublic(iItemsNode, as[4].trim());
     as = sPlain.split(",");
-    if (+as[0].trim() !== iNode || +as[1].trim() !== iLogAt || +as[2].trim() !== when || as[3].trim() !== sData) {
-      me._Tell("19 Error >" + as[3] + "<>" + sData + "<");
+    if (+as[0].trim() !== iItemsNode || +as[1].trim() !== iItemsItem || +as[2].trim() !== whenItem || as[3].trim() !== sItemsData) {
+      me._Tell("19 Error >" + as[3] + "<>" + sItemsData + "<");
       continue;
     }
     
-    while (me._a2sLogs[iNode].length <= iLogAt) {
-      me._a2sLogs[iNode].push("");
+    while (me._a2sLogs[iItemsNode].length <= iItemsItem) {
+      me._a2sLogs[iItemsNode].push("");
     }
     
-    if ("" === me._a2sLogs[iNode][iLogAt]) {
-      me._a2sLogs[iNode][iLogAt] = sItem;
+    if ("" === me._a2sLogs[iItemsNode][iItemsItem]) {
+      me._a2sLogs[iItemsNode][iItemsItem] = sItem;
     } else {
-      if (me._a2sLogs[iNode][iLogAt] === sItem) {
+      if (me._a2sLogs[iItemsNode][iItemsItem] === sItem) {
         me._Tell("20 ??? Repeat.");
       } else {
         me._Tell("21 ??? Over-writing.");
@@ -267,6 +263,7 @@ ByzNode.prototype.Hark = function(a_sItems) {
     }
   }
   
+  me._Tell(me.sListOfMyLogs());
   return true;
 };
 

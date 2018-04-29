@@ -1,7 +1,7 @@
 // ByzCrypto.js - Node.js wrapper for public/private encryption/decryption. RSA used as an example, but can be replaced in future.
 // Non-patented content (c)2018 David C. Walley, MIT license.
 
-console.log("***1 ByzCrypto.js running under NODE.");
+console.log("ByzCrypto.js running under NODE.");
 var G = require("./G.js");
 var fs = require("fs");
 var NodeRSA = require("node-rsa");

@@ -34,17 +34,19 @@ ByzTest.prototype._bRenew = function(a_asNodeNames) {
     me._anodeserver[i] = NodeServer.nodeserverNEW(a_asNodeNames[i], i, n);
   }
   // Start clock with recognizable value.
-  g.whenNowTo_ms(1500000);
-  me._Tell("1 Start All.");
-  me._ShowAll();
+  g.whenNowTo_ms(150000);
+  me._Tell("Start all.");
   setTimeout(function() {
-    me._Tell('2 Dan creates "Dan1".');
+    me._Tell("Dan creates 'Dan1'.");
     me._anodeserver[3].CreateLog("Dan1");
     me._ShowAll();
   }, 5000);
   setTimeout(function() {
     me._ShowAll();
   }, 10000);
+  setTimeout(function() {
+    me._ShowAll();
+  }, 15000);
   
   return true;
 };
@@ -52,7 +54,7 @@ ByzTest.prototype._bRenew = function(a_asNodeNames) {
 // Log message to console.
 ByzTest.prototype._Tell = function(a_sText) {
   var me = this;
-  console.log("+ Test " + g.whenNow_ms() + " " + a_sText);
+  console.log("++++ " + g.whenNow_ms() + " " + a_sText);
   return true;
 };
 
@@ -61,8 +63,7 @@ ByzTest.prototype._ShowAll = function() {
   var me = this;
   var n = me._anodeserver.length;
   for (var i = 0; i < n; i++) {
-    me._Tell("3.0 Logs at node " + i + ": " + me._anodeserver[i].sListOfMyLogs());
-    me._Tell("3.1: " + me._anodeserver[i].sListCertainty());
+    me._Tell(me._anodeserver[i].sListOfMyLogs());
   }
   return true;
 };

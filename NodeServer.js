@@ -55,13 +55,13 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
 // Log message to console.
 NodeServer.prototype._Tell = function(a_sText) {
   var me = this;
-  console.log(" +" + me._sName + " " + g.whenNow_ms() + " " + a_sText);
+  console.log("^" + me._sName.toUpperCase() + " " + g.whenNow_ms() + " " + a_sText);
   return true;
 };
 
 NodeServer.nROOTpORT = 8080;
 
-// Report the sizes of the message logs of this server.
+// Report the sizes of the logs of this server.
 NodeServer.prototype.sHowMuchIKnow = function() {
   var me = this;
   return me._byznode.sHowMuchIKnow();
@@ -71,12 +71,6 @@ NodeServer.prototype.sHowMuchIKnow = function() {
 NodeServer.prototype.sListOfMyLogs = function() {
   var me = this;
   return me._byznode.sListOfMyLogs();
-};
-
-// Report known data payloads, timestamp, and the certainty of timestamp.
-NodeServer.prototype.sListCertainty = function() {
-  var me = this;
-  return me._byznode.sListCertainty();
 };
 
 // Wrapper for creating a new log item.
@@ -150,15 +144,15 @@ NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
 // Make a call to another server on localhost.
 NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
   var me = this;
-  var sRequestNotes = me._sName + "(" + me._isPort + ") " + me._ticks + "t --\x3e to:" + a_isPort + "/?igot " + a_sDataPayloadOut;
+  var sRequestNotes = a_sDataPayloadOut + " ==> " + a_isPort;
   var sBuffer = "";
   var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_httpresponse) {
     a_httpresponse.on("data", function(a_chunk) {
       sBuffer += a_chunk.toString();
     });
     a_httpresponse.on("end", function() {
-      if ("" !== sBuffer) {
-        me._Tell("52 " + sRequestNotes + " <-- " + G.sSHRINK(sBuffer));
+      if (0 <= sBuffer.indexOf("|")) {
+        me._Tell(sRequestNotes + "." + G.sSHRINK(sBuffer));
         me._byznode.Hark(sBuffer);
       }
     });

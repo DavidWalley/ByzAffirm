@@ -21,7 +21,7 @@ G.gNEW = function() {
 G.prototype._bRenew = function() {
   var me = this;
   me._whenFakeOffset = 0;
-  me._nTestRandomSeed = 0;
+  me._nTestRandomSeed = 10;
   return true;
 };
 

@@ -15,34 +15,36 @@ function NodeServer() {
   this._sName;
   this._isPort;
   this._nNodes;
-  this._httpserver;
   this._byznode;
   this._ticks;
+  this._bOnNotOff;
+  this._httpserver;
 }
 
 // Factory constructor of instance of this class.
-NodeServer.nodeserverNEW = function(a_sName, a_iWhich, a_nNodes) {
+NodeServer.nodeserverNEW = function(a_sName, a_iWhich, a_nNodes, a_biztest) {
   var ob = new NodeServer;
-  if (!ob._bRenew(a_sName, a_iWhich, a_nNodes)) {
+  if (!ob._bRenew(a_sName, a_iWhich, a_nNodes, a_biztest)) {
     return null;
   }
   return ob;
 };
 
 // Initialize or reset object.
-NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
+NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes, a_biztest) {
   var me = this;
   me._sName = a_sName;
   me._isPort = a_iWhich + NodeServer.nROOTpORT;
   me._nNodes = a_nNodes;
-  me._byznode = ByzNode.byznodeNEW(a_sName, a_iWhich, a_nNodes);
+  me._byznode = ByzNode.byznodeNEW(a_sName, a_iWhich, a_nNodes, a_biztest);
   me._ticks = 0;
+  me._bOnNotOff = true;
   
   me._httpserver = g_http.createServer(function(a, b) {
     me.HandleRequest(a, b);
   });
   me._httpserver.listen(me._isPort, function() {
-    me._Tell("50 Started: http://localhost:" + me._isPort);
+    me._Tell("Started: http://localhost:" + me._isPort);
   });
   
   setTimeout(function() {
@@ -52,14 +54,13 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes) {
   return true;
 };
 
-// Log message to console.
-NodeServer.prototype._Tell = function(a_sText) {
-  var me = this;
-  console.log("^" + me._sName.toUpperCase() + " " + g.whenNow_ms() + " " + a_sText);
-  return true;
-};
-
 NodeServer.nROOTpORT = 8080;
+
+// Cause server to stop responding.
+NodeServer.prototype.TurnOff = function() {
+  var me = this;
+  me._bOnNotOff = false;
+};
 
 // Report the sizes of the logs of this server.
 NodeServer.prototype.sHowMuchIKnow = function() {
@@ -67,27 +68,24 @@ NodeServer.prototype.sHowMuchIKnow = function() {
   return me._byznode.sHowMuchIKnow();
 };
 
-// Report text of message logs of this server.
-NodeServer.prototype.sListOfMyLogs = function() {
+// Report text of memo logs of this server.
+NodeServer.prototype.sShowMyCopies = function() {
   var me = this;
-  return me._byznode.sListOfMyLogs();
+  return me._byznode.sShowMyCopies();
 };
 
-// Wrapper for creating a new log item.
-NodeServer.prototype.CreateLog = function(a_s) {
+// Wrapper for creating a brand new memo.
+NodeServer.prototype.MakeMemo = function(a_s) {
   var me = this;
-  return me._byznode.CreateLog(a_s);
-};
-
-// Process POSTed data after it is all re-assembled.
-NodeServer.prototype._sHandleRequest_ReplyToPost = function(a_sHowMuchTheyKnow) {
-  var me = this;
-  return me._byznode.sGetNewsForThem(a_sHowMuchTheyKnow);
+  me._byznode.MakeMemo(g.whenNow_ms(), a_s);
 };
 
 // Periodic routine:
 NodeServer.prototype.ONtICK = function() {
   var me = this;
+  if (!me._bOnNotOff) {
+    return false;
+  }
   me._ticks++;
   var iOther = 0;
   do {
@@ -109,6 +107,9 @@ NodeServer.prototype.ONtICK = function() {
 // Server's request handler - decode request and send response.
 NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
   var me = this;
+  if (!me._bOnNotOff) {
+    return false;
+  }
   if ("/?kill" === a_httprequest.url) {
     a_httpresponse.end("Server " + me._isPort + " die.");
     a_httpresponse.end();
@@ -132,15 +133,14 @@ NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
       a_httprequest.connection.destroy();
     }
   });
-  
+  // Process POSTed data after it is all re-assembled.
   a_httprequest.on("end", function() {
-    a_httpresponse.end(me._sHandleRequest_ReplyToPost(sBuffer));
+    a_httpresponse.end(me._byznode.sGetNewsForCaller(sBuffer));
   });
   
   return true;
 };
 
-// CALL ANOTHER SERVER:
 // Make a call to another server on localhost.
 NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
   var me = this;
@@ -159,6 +159,13 @@ NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, 
   });
   requestPost.write(a_sDataPayloadOut);
   requestPost.end();
+  return true;
+};
+
+// Log message to console.
+NodeServer.prototype._Tell = function(a_sText) {
+  var me = this;
+  console.log("^" + g.whenNow_ms() + " " + me._sName.toUpperCase() + " " + a_sText);
   return true;
 };
 

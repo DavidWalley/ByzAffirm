@@ -85,4 +85,4 @@ Note: I know that reading more about Hashgraph probably gives an answer to the a
 
 ## Other Projects
 My objective is a free and open source Async BFT, so if someone else beats me to it, that is fine by me. I am starting a list of other projects that may or may not fit the bill:
-- https://medium.com/algorand/algorands-instant-consensus-protocol-e66ac5807e37
+- https://medium.com/algorand/algorands-instant-consensus-protocol-e66ac5807e37. Unfortunately, it appears this one is subject to patents as well. Here's hoping that Hashgraph and Algorand compete, and one of them decides to go open source to beat the other.

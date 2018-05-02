@@ -64,8 +64,7 @@ As my first task, I want to write a simple demo of the above and see if it works
 - Ability to set up node.js test nodes on localhost, using sequential ports 8080, 8081.... While not required for testing, this architecture is closer to what the final version will be like.
 - RSA cryptology for private-key encryption and public-key decryption is working. In future, this could be replaced with any private/public cryptographic scheme.
 - Gossip communications protocol is working.
-- Determining range of timestamp from logged info is coded, and rough tests show it is working.
-- Started work on a different tack - compare messages head-to-head, less interest in timestamp.
+- Started work on a different tack - compare messages head-to-head, with less reliance in timestamp.
 
 ## Bugs and TODOs
 - localhost testing fails when not connected to Internet, even though it should not be needed.
@@ -83,3 +82,7 @@ Note: I know that reading more about Hashgraph probably gives an answer to the a
 - Spread the word. No rush though - Baird's group is spending millions of dollars promoting Hashgraph over Blockchain, which is not a bad thing for ByzAffirm.
 - Research into the history of virtual voting systems might be useful.
 - Not ready yet, but raising or preparing to raise money for legal opinions could be useful.
+
+## Other Projects
+My objective is a free and open source Async BFT, so if someone else beats me to it, that is fine by me. I am starting a list of other projects that may or may not fit the bill:
+- https://medium.com/algorand/algorands-instant-consensus-protocol-e66ac5807e37

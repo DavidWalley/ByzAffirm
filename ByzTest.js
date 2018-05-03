@@ -4,7 +4,7 @@
 console.log("ByzTest.js running under NODE");
 var NodeServer = require("./NodeServer.js");
 if ("undefined" === typeof g) {
-  // Global singleton general purpose routines and handy code conveniences.
+  // Global singleton general purpose routines and handy code conveniences:
   var G = require("./G.js");
   var g = G.g;
 }

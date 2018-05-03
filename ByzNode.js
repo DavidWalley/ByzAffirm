@@ -81,7 +81,7 @@ ByzNode.prototype.sHowMuchIKnow = function() {
   return r_s;
 };
 
-// Determing when the given memo was first created.
+// Determine when the given memo was first created.
 ByzNode.prototype._whenMade = function(a_iNode, a_iMemo) {
   var me = this;
   var asMemo;

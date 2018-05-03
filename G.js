@@ -137,6 +137,7 @@ G.sSHRINK = function(a_s) {
   var r_s = "";
   var as = a_s.split(" ");
   var n = as.length;
+  
   for (var i = 0; i < n; i++) {
     if (as[i].length < 40) {
       r_s += " " + as[i];
@@ -144,6 +145,7 @@ G.sSHRINK = function(a_s) {
       r_s += " " + as[i].slice(0, 4) + ".." + as[i].slice(-3);
     }
   }
+  
   return r_s;
 };
 

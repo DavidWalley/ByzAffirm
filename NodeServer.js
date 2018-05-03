@@ -92,6 +92,7 @@ NodeServer.prototype.ONtICK = function() {
     iOther = Math.floor(g.dRandom(0, me._nNodes)) + NodeServer.nROOTpORT;
   } while (iOther === me._isPort);
   var s = me._byznode.sHowMuchIKnow();
+  
   me._OnTick_MakeRequest("localhost", "/?igot", iOther, s);
   if (me._ticks < 1000) {
     setTimeout(function() {
@@ -110,6 +111,7 @@ NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
   if (!me._bOnNotOff) {
     return false;
   }
+  
   if ("/?kill" === a_httprequest.url) {
     a_httpresponse.end("Server " + me._isPort + " die.");
     a_httpresponse.end();
@@ -117,6 +119,7 @@ NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
     a_httprequest.connection.destroy;
     me._httpserver.close();
   }
+  
   if (!("/?igot" === a_httprequest.url)) {
     throw new Error("ASSERTION: ErrorMessage");
   }
@@ -150,6 +153,7 @@ NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, 
     a_httpresponse.on("data", function(a_chunk) {
       sBuffer += a_chunk.toString();
     });
+    
     a_httpresponse.on("end", function() {
       if (0 <= sBuffer.indexOf("|")) {
         me._Tell(sRequestNotes + "." + G.sSHRINK(sBuffer));

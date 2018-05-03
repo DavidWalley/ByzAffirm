@@ -2,6 +2,7 @@
 // (c)2018 David C. Walley, MIT license.
 
 console.log("ByzTest.js running under NODE");
+
 var NodeServer = require("./NodeServer.js");
 if ("undefined" === typeof g) {
   // Global singleton general purpose routines and handy code conveniences:
@@ -38,19 +39,23 @@ ByzTest.prototype._bRenew = function(a_asNodeNames) {
   me._Tell("Start all.");
   me._Tell("Ann goes off-line.");
   me._anodeserver[0].TurnOff();
+  // Create a brand new memo.
   setTimeout(function() {
     me._Tell("Bob creates 'Hey1'.");
     me._anodeserver[1].MakeMemo("Hey1");
     me.ShowAll();
   }, 5000);
+  // Create a brand new memo.
   setTimeout(function() {
     me._Tell("Cam creates 'Hey2'.");
     me._anodeserver[2].MakeMemo("Hey2");
     me.ShowAll();
   }, 5000);
+  // Output everything for every node, after 10 seconds.
   setTimeout(function() {
     me.ShowAll();
   }, 10000);
+  // Output everything for every node, after 15 seconds.
   setTimeout(function() {
     me.ShowAll();
   }, 15000);

@@ -5,7 +5,7 @@ tldr: A non-lawyer suggests Hashgraph patents may not be valid, and is doing pre
 
 **NOTE: There is only test code here, so far.**
 
-Blockchain - the basic algorithm that BitCoin and related cryptocurrencies use, has a new challenger named Hashgraph. A coin, Hedera Hashgraph, has been announced by the Hedera governance council. With superior performance over any blockchain variant including Etherium, many are rejecting Hashgraph because of the patents claimed by Swirlds and inventor Leemon Baird.
+Blockchain - the basic algorithm that BitCoin and related cryptocurrencies use, has a new challenger named Hashgraph. A coin, Hedera Hashgraph, has been announced by the Hedera governance council. With superior performance over any blockchain variant including Etherium, many are rejecting Hashgraph anyway, because of patents claimed by inventor Leemon Baird and his company Swirlds, which is to forever be on the governance council.
 
 **IMPORTANT: I am not a lawyer and this code repository does not contain any valid legal advice. Any and all code to be added is meant for discussion of my thoughts and experiments only. As a non-lawyer, I cannot say if any or all of the code violates one or several patents, so do not execute, copy, use or incorporate any of this code in any project for any purpose whatsoever.**
 
@@ -74,8 +74,8 @@ As my first task, I want to write a simple demo of the above and see if it works
 
 ## Next Steps
 - Compare messages head-to-head in each node's copy of logs.
-- Assuming honest nodes have reasonable accuracy of their clocks, put a time-limit (starting from creation timestamp) for getting enough data for a given node to determine its opinion on which of two memos is first.
-- A node should not rely on the accuracy of any other node's clock when deciding which of two memos was first, but there has to be some way to ensure reasonable synchronicity of clocks when independently deciding if some time-limit has been reached. I think it might work if nodes are simply given a good incentive to maintain an accurate clock. I think it is enough put a timestamp on all network messages, and have the receiving node reject any messages not within t seconds of its clock. We can then use timestamps for determining time-outs of T with certainty, where t << T.
+- Assuming honest nodes have reasonable accuracy of their clocks, put a time-limit (starting from message creation timestamp) for getting enough data for a given node to determine its opinion on which of two messages is first.
+- A node should not rely on the accuracy of any other node's clock when deciding which of two memos was first, but there has to be some way to ensure reasonable synchronicity of clocks when independently deciding if some time-limit has been reached. I think it might work if nodes are simply given a good incentive to maintain an accurate clock. I think it is enough to put a timestamp on all network messages, and have the receiving node reject any messages not within [-t,+t] seconds of its clock. We can then use timestamps for determining time-outs of T with certainty, where t << T.
 
 Note: I know that reading more about Hashgraph probably gives an answer to the above, but I am avoiding doing this. Reading the 30 year-old patents may also give the answer, which would be fine, so I will do this when I run out of obvious things to try.
 

@@ -65,6 +65,8 @@ As my first task, I want to write a simple demo of the above and see if it works
 - RSA cryptology for private-key encryption and public-key decryption is working. In future, this could be replaced with any private/public cryptographic scheme.
 - Gossip communications protocol is working.
 - Started work on a different tack - compare messages head-to-head, with less reliance in timestamp.
+- A node should not rely on the accuracy of any other node's clock when deciding which of two memos was first, but there has to be some way to ensure reasonable synchronicity of clocks when independently deciding if some time-limit has been reached. I think it might work if nodes are simply given a good incentive to maintain an accurate clock. I think it is enough to put a timestamp on all network messages, and have the receiving node reject any messages not within [-t,+t] seconds of its clock. We can then use timestamps for determining time-outs of T with certainty, where t << T.
+- Introduced simulated errors in nodes' clocks. Put time-limits on network messages and for gossip protocol propogation as a whole. Needs testing.
 
 ## Bugs and TODOs
 - localhost testing fails when not connected to Internet, even though it should not be needed.
@@ -74,8 +76,7 @@ As my first task, I want to write a simple demo of the above and see if it works
 
 ## Next Steps
 - Compare messages head-to-head in each node's copy of logs.
-- Assuming honest nodes have reasonable accuracy of their clocks, put a time-limit (starting from message creation timestamp) for getting enough data for a given node to determine its opinion on which of two messages is first.
-- A node should not rely on the accuracy of any other node's clock when deciding which of two memos was first, but there has to be some way to ensure reasonable synchronicity of clocks when independently deciding if some time-limit has been reached. I think it might work if nodes are simply given a good incentive to maintain an accurate clock. I think it is enough to put a timestamp on all network messages, and have the receiving node reject any messages not within [-t,+t] seconds of its clock. We can then use timestamps for determining time-outs of T with certainty, where t << T.
+- More testing.
 
 Note: I know that reading more about Hashgraph probably gives an answer to the above, but I am avoiding doing this. Reading the 30 year-old patents may also give the answer, which would be fine, so I will do this when I run out of obvious things to try.
 

@@ -12,9 +12,9 @@ if ("undefined" === typeof g) {
 // Constructor to run a node.js server.
 function NodeServer() {
   // Private variables:
-  this._sName;
   this._isPort;
   this._nNodes;
+  this._sName;
   this._byznode;
   this._ticks;
   this._bOnNotOff;
@@ -22,21 +22,22 @@ function NodeServer() {
 }
 
 // Factory constructor of instance of this class.
-NodeServer.nodeserverNEW = function(a_sName, a_iWhich, a_nNodes, a_biztest) {
+NodeServer.nodeserverNEW = function(a_byztestMom, a_iWhich, a_nNodes, a_takeErr_ms) {
   var ob = new NodeServer;
-  if (!ob._bRenew(a_sName, a_iWhich, a_nNodes, a_biztest)) {
+  if (!ob._bRenew(a_byztestMom, a_iWhich, a_nNodes, a_takeErr_ms)) {
     return null;
   }
   return ob;
 };
 
 // Initialize or reset object.
-NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes, a_biztest) {
+NodeServer.prototype._bRenew = function(a_byztestMom, a_iWhich, a_nNodes, a_takeErr_ms) {
   var me = this;
-  me._sName = a_sName;
   me._isPort = a_iWhich + NodeServer.nROOTpORT;
   me._nNodes = a_nNodes;
-  me._byznode = ByzNode.byznodeNEW(a_sName, a_iWhich, a_nNodes, a_biztest);
+  me._sName = G.sNAME(a_iWhich);
+  me._sName = me._sName.toUpperCase();
+  me._byznode = ByzNode.byznodeNEW(a_byztestMom, a_iWhich, a_nNodes, a_takeErr_ms);
   me._ticks = 0;
   me._bOnNotOff = true;
   
@@ -44,7 +45,7 @@ NodeServer.prototype._bRenew = function(a_sName, a_iWhich, a_nNodes, a_biztest) 
     me.HandleRequest(a, b);
   });
   me._httpserver.listen(me._isPort, function() {
-    me._Tell("Started: http://localhost:" + me._isPort);
+    me._Tell("Node Server started: http://localhost:" + me._isPort + " err:" + a_takeErr_ms + "ms");
   });
   
   setTimeout(function() {
@@ -62,12 +63,6 @@ NodeServer.prototype.TurnOff = function() {
   me._bOnNotOff = false;
 };
 
-// Report the sizes of the logs of this server.
-NodeServer.prototype.sHowMuchIKnow = function() {
-  var me = this;
-  return me._byznode.sHowMuchIKnow();
-};
-
 // Report text of memo logs of this server.
 NodeServer.prototype.sShowMyCopies = function() {
   var me = this;
@@ -77,7 +72,7 @@ NodeServer.prototype.sShowMyCopies = function() {
 // Wrapper for creating a brand new memo.
 NodeServer.prototype.MakeMemo = function(a_s) {
   var me = this;
-  me._byznode.MakeMemo(g.whenNow_ms(), a_s);
+  me._byznode.MakeMemo(a_s);
 };
 
 // Periodic routine:
@@ -101,6 +96,29 @@ NodeServer.prototype.ONtICK = function() {
   } else {
     me._Tell("51 Shutting down periodic routine on " + me._isPort + ".");
   }
+  return true;
+};
+
+// Make a call to another server on localhost.
+NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
+  var me = this;
+  var sRequestNotes = a_sDataPayloadOut + " ==> " + a_isPort;
+  var sBuffer = "";
+  var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_httpresponse) {
+    a_httpresponse.on("data", function(a_chunk) {
+      sBuffer += a_chunk.toString();
+    });
+    a_httpresponse.on("end", function() {
+      me._byznode.Hark(sRequestNotes, sBuffer);
+    });
+  });
+  requestPost.on("error", function(e) {
+  });
+  requestPost.setTimeout(1200, function() {
+    requestPost.abort();
+  });
+  requestPost.write(a_sDataPayloadOut);
+  requestPost.end();
   return true;
 };
 
@@ -144,32 +162,10 @@ NodeServer.prototype.HandleRequest = function(a_httprequest, a_httpresponse) {
   return true;
 };
 
-// Make a call to another server on localhost.
-NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
-  var me = this;
-  var sRequestNotes = a_sDataPayloadOut + " ==> " + a_isPort;
-  var sBuffer = "";
-  var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_httpresponse) {
-    a_httpresponse.on("data", function(a_chunk) {
-      sBuffer += a_chunk.toString();
-    });
-    
-    a_httpresponse.on("end", function() {
-      if (0 <= sBuffer.indexOf("|")) {
-        me._Tell(sRequestNotes + "." + G.sSHRINK(sBuffer));
-        me._byznode.Hark(sBuffer);
-      }
-    });
-  });
-  requestPost.write(a_sDataPayloadOut);
-  requestPost.end();
-  return true;
-};
-
 // Log message to console.
 NodeServer.prototype._Tell = function(a_sText) {
   var me = this;
-  console.log("^" + g.whenNow_ms() + " " + me._sName.toUpperCase() + " " + a_sText);
+  console.log("^" + g.whenNow_ms() + " " + me._sName + " " + a_sText);
   return true;
 };
 

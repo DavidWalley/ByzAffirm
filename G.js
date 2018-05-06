@@ -32,6 +32,13 @@ G.ONrEADY = function(a_f) {
   return true;
 };
 
+// Report a standard name (for debug mostly).
+G.sNAME = function(a_i) {
+  var as = ["ann", "bob", "cam", "dan", "eve", "fae", "gus", "hal", "ian", "joy", "ken", "lee", "mae", "nan", "ola", "pam", "qwe", "rae", "sam", "tim", "uma", "viv", "wes", "xia", "yan", "zac"];
+  return as[a_i];
+};
+
+
 // Hash given text (simple demo hash).
 G.sHASH = function(a_s) {
   var r_bits32 = 0;
@@ -151,6 +158,7 @@ G.sSHRINK = function(a_s) {
 
 exports.g = G.gNEW();
 exports.gNEW = G.gNEW;
+exports.sNAME = G.sNAME;
 exports.sHASH = G.sHASH;
 exports.bIS = G.bIS;
 exports.bNO = G.bNO;

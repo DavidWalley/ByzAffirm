@@ -17,23 +17,24 @@ function ByzTest() {
 }
 
 // Factory constructor of instance of this class.
-ByzTest.byztestNEW = function(a_asNodeNames) {
+ByzTest.byztestNEW = function(a_nNodes) {
   var ob = new ByzTest;
-  if (!ob._bRenew(a_asNodeNames)) {
+  if (!ob._bRenew(a_nNodes)) {
     return null;
   }
   return ob;
 };
 
 // Initialize or reset object.
-ByzTest.prototype._bRenew = function(a_asNodeNames) {
+ByzTest.prototype._bRenew = function(a_nNodes) {
   var me = this;
   me._anodeserver = [];
   // Set up some simulated server nodes.
-  var n = a_asNodeNames.length;
-  for (var i = 0; i < n; i++) {
-    me._anodeserver[i] = NodeServer.nodeserverNEW(a_asNodeNames[i], i, n, me);
-  }
+  me._anodeserver[0] = NodeServer.nodeserverNEW(me, 0, a_nNodes, 100);
+  me._anodeserver[1] = NodeServer.nodeserverNEW(me, 1, a_nNodes, 200);
+  me._anodeserver[2] = NodeServer.nodeserverNEW(me, 2, a_nNodes, -100);
+  me._anodeserver[3] = NodeServer.nodeserverNEW(me, 3, a_nNodes, -200);
+  me._anodeserver[4] = NodeServer.nodeserverNEW(me, 4, a_nNodes, 500);
   // Start clock with recognizable value.
   g.whenNowTo_ms(150000);
   me._Tell("Start all.");
@@ -82,4 +83,4 @@ ByzTest.prototype.ShowAll = function() {
   return true;
 };
 
-var g_biztest = ByzTest.byztestNEW(["ann", "bob", "cam", "dan", "eve"]);
+var g_biztest = ByzTest.byztestNEW(5);

@@ -32,23 +32,23 @@ ByzTest.prototype._bRenew = function(a_nNodes) {
   // Set up some simulated server nodes.
   me._anodeserver[0] = NodeServer.nodeserverNEW(me, 0, a_nNodes, 100);
   me._anodeserver[1] = NodeServer.nodeserverNEW(me, 1, a_nNodes, 200);
-  me._anodeserver[2] = NodeServer.nodeserverNEW(me, 2, a_nNodes, -100);
+  me._anodeserver[2] = NodeServer.nodeserverNEW(me, 2, a_nNodes, 0);
   me._anodeserver[3] = NodeServer.nodeserverNEW(me, 3, a_nNodes, -200);
   me._anodeserver[4] = NodeServer.nodeserverNEW(me, 4, a_nNodes, 500);
   // Start clock with recognizable value.
-  g.whenNowTo_ms(150000);
+  g.whenNowTo_ms(1500000);
   me._Tell("Start all.");
-  me._Tell("Ann goes off-line.");
+  me._Tell("Ann off-line.");
   me._anodeserver[0].TurnOff();
   // Create a brand new memo.
   setTimeout(function() {
-    me._Tell("Bob creates 'Hey1'.");
+    me._Tell("Bob makes 'Hey1'.");
     me._anodeserver[1].MakeMemo("Hey1");
     me.ShowAll();
   }, 5000);
   // Create a brand new memo.
   setTimeout(function() {
-    me._Tell("Cam creates 'Hey2'.");
+    me._Tell("Cam makes 'Hey2'.");
     me._anodeserver[2].MakeMemo("Hey2");
     me.ShowAll();
   }, 5000);

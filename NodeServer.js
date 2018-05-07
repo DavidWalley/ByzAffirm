@@ -45,7 +45,7 @@ NodeServer.prototype._bRenew = function(a_byztestMom, a_iWhich, a_nNodes, a_take
     me.HandleRequest(a, b);
   });
   me._httpserver.listen(me._isPort, function() {
-    me._Tell("Node Server started: http://localhost:" + me._isPort + " err:" + a_takeErr_ms + "ms");
+    me._Tell("Node Server start http://localhost:" + me._isPort + " simulated error: " + a_takeErr_ms + "ms");
   });
   
   setTimeout(function() {
@@ -82,6 +82,7 @@ NodeServer.prototype.ONtICK = function() {
     return false;
   }
   me._ticks++;
+  // Choose a node at random (but not ourselves).
   var iOther = 0;
   do {
     iOther = Math.floor(g.dRandom(0, me._nNodes)) + NodeServer.nROOTpORT;
@@ -89,20 +90,17 @@ NodeServer.prototype.ONtICK = function() {
   var s = me._byznode.sHowMuchIKnow();
   
   me._OnTick_MakeRequest("localhost", "/?igot", iOther, s);
-  if (me._ticks < 1000) {
-    setTimeout(function() {
-      me.ONtICK();
-    }, 500);
-  } else {
-    me._Tell("51 Shutting down periodic routine on " + me._isPort + ".");
-  }
+  // Run again later.
+  setTimeout(function() {
+    me.ONtICK();
+  }, 500);
   return true;
 };
 
 // Make a call to another server on localhost.
 NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, a_sDataPayloadOut) {
   var me = this;
-  var sRequestNotes = a_sDataPayloadOut + " ==> " + a_isPort;
+  var sRequestNotes = a_sDataPayloadOut + " ==> " + a_isPort + " " + G.sNAME(a_isPort - 8080);
   var sBuffer = "";
   var requestPost = g_http.request({"method":"POST", "hostname":a_sHost, "path":a_sPath, "port":a_isPort, "headers":{"Content-Type":"text/plain", "Content-Length":Buffer.byteLength(a_sDataPayloadOut)}}, function(a_httpresponse) {
     a_httpresponse.on("data", function(a_chunk) {
@@ -114,6 +112,7 @@ NodeServer.prototype._OnTick_MakeRequest = function(a_sHost, a_sPath, a_isPort, 
   });
   requestPost.on("error", function(e) {
   });
+  // Setup a time-out.
   requestPost.setTimeout(1200, function() {
     requestPost.abort();
   });

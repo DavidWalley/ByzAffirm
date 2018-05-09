@@ -66,7 +66,7 @@ As my first task, I want to write a simple demo of the above and see if it works
 - Gossip communications protocol is working.
 - Started work on a different tack - compare messages head-to-head, with less reliance in timestamp.
 - A node should not rely on the accuracy of any other node's clock when deciding which of two memos was first, but there has to be some way to ensure reasonable synchronicity of clocks when independently deciding if some time-limit has been reached. I think it might work if nodes are simply given a good incentive to maintain an accurate clock. I think it is enough to put a timestamp on all network messages, and have the receiving node reject any messages not within [-t,+t] seconds of its clock. We can then use timestamps for determining time-outs of T with certainty, where t << T.
-- Introduced simulated errors in nodes' clocks. Put time-limits on network messages and for gossip protocol propogation as a whole. Needs testing.
+- Introduced simulated errors in nodes' clocks. Put time-limits on network messages and for gossip protocol propagation as a whole. Needs testing.
 
 ## Bugs and TODOs
 - localhost testing fails when not connected to Internet, even though it should not be needed.
@@ -75,10 +75,18 @@ As my first task, I want to write a simple demo of the above and see if it works
 - TODO: Set up a test copy of the real Hashgraph algorithm for comparison.
 
 ## Next Steps
-- Compare messages head-to-head in each node's copy of logs.
-- More testing.
 
-Note: I know that reading more about Hashgraph probably gives an answer to the above, but I am avoiding doing this. Reading the 30 year-old patents may also give the answer, which would be fine, so I will do this when I run out of obvious things to try.
+I have come to the end of my first stage of work, and now have to pause, reflect and learn. 
+
+Up to this point I have been trying to act as any programmer would, with no particular expertise or new ideas in the field, just following the breadcrumbs and obvious decisions to see where they lead. I haven't done anything other than implement in JavaScript and node.js: the gossip protocol for local http testing; plug-in open source cryptographic routines; message validity checks including reasonable limits on clock differences and transit time; and, keeping track of the last time that one node knew another node's log state with certainty.
+
+I implemented a seeded-pseudo-random number generator so I could run tests repeatedly, while continually adding and revising console.log() debug messages, in order to test out a few simple scenarios (a missing node, and a poor connection/time difference), and then read through the debug log to get a handle on what was going on, and what decisions could or could not be made at various times.
+
+From the debug logs, I can see how I can look back in time in the logs, to find when a node could decide how to vote on any binary "who was first" question, and how split decisions can be resolved by looking at timestamp evidence in the logs. What is less clear is whether all nodes will all come to the exact same decision in every possible scenario.
+
+I am missing the mathematical proof that covers the "every possible scenario" part of the question, and this might be the idea that Leemon Baird is claiming in his patent. I simply do not know at this time, but I have a much better idea of the details behind Async BFT.
+
+So, I am at the end of the obvious-naive-steps stage. My next step is to read the 30-year-old patents, and anything else in the public domain, that will take me beyond the obvious and more into the specialized field of Byzantine Fault Tolerance. As the legal waters have only gotten murkier, I am freezing updates to the code in this repo, at least for now, but will continue updating this README.
 
 ## How You Can Help
 - Spread the word. No rush though - Baird's group is spending millions of dollars promoting Hashgraph over Blockchain, which is not a bad thing for ByzAffirm.

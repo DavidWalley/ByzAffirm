@@ -96,3 +96,5 @@ So, I am at the end of the obvious-naive-steps stage. My next step is to read th
 ## Other Projects
 My objective is a free and open source Async BFT, so if someone else beats me to it, that is fine by me. I am starting a list of other projects that may or may not fit the bill:
 - https://medium.com/algorand/algorands-instant-consensus-protocol-e66ac5807e37. Unfortunately, it appears this one is subject to patents as well. Here's hoping that Hashgraph and Algorand compete, and one of them decides to go open source to beat the other.
+- https://medium.com/monet-network/from-peanuts-to-hashgraph-46c2308982c5. From Peanuts to Hashgraph - A bit of humor to help understand Hashgraph and why Charlie Brown cannot kick a football.
+- https://lamport.azurewebsites.net/pubs/time-clocks.pdf. Time, Clocks, and the Ordering of Events in a Distributed System - A blast from the past (1978).

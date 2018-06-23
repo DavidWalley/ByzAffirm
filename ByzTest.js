@@ -1,15 +1,10 @@
 // ByzTest.js - Setup and run a network simulation test on localhost ByzAffirm server nodes.
 // (c)2018 David C. Walley, MIT license.
 
-console.log("ByzTest.js running under NODE");
-
+var G = require("./G.js");
+var g = G.g;
+var ByzNode = require("./ByzNode.js");
 var NodeServer = require("./NodeServer.js");
-if ("undefined" === typeof g) {
-  // Global singleton general purpose routines and handy code conveniences:
-  var G = require("./G.js");
-  var g = G.g;
-}
-
 // Define a class to test a simulated network of ByzAffirm nodes.
 function ByzTest() {
   // Private variables:
@@ -40,18 +35,13 @@ ByzTest.prototype._bRenew = function(a_nNodes) {
   me._Tell("Start all.");
   me._Tell("Ann off-line.");
   me._anodeserver[0].TurnOff();
-  // Create a brand new memo.
+  // Create a brand new message.
   setTimeout(function() {
     me._Tell("Bob makes 'Hey1'.");
     me._anodeserver[1].MakeMemo("Hey1");
     me.ShowAll();
   }, 5000);
-  // Create a brand new memo.
-  setTimeout(function() {
-    me._Tell("Cam makes 'Hey2'.");
-    me._anodeserver[2].MakeMemo("Hey2");
-    me.ShowAll();
-  }, 5000);
+  // Create a brand new message.
   // Output everything for every node, after 10 seconds.
   setTimeout(function() {
     me.ShowAll();

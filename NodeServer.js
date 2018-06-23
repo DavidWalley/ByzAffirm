@@ -2,13 +2,9 @@
 // (c)2018 David C. Walley, MIT license.
 
 var g_http = require("http");
+var G = require("./G.js");
+var g = G.g;
 var ByzNode = require("./ByzNode.js");
-if ("undefined" === typeof g) {
-  var G = require("./G.js");
-  var g = G.g;
-}
-
-
 // Constructor to run a node.js server.
 function NodeServer() {
   // Private variables:
@@ -63,13 +59,13 @@ NodeServer.prototype.TurnOff = function() {
   me._bOnNotOff = false;
 };
 
-// Report text of memo logs of this server.
+// Report text of message logs of this server.
 NodeServer.prototype.sShowMyCopies = function() {
   var me = this;
   return me._byznode.sShowMyCopies();
 };
 
-// Wrapper for creating a brand new memo.
+// Wrapper for creating a brand new message.
 NodeServer.prototype.MakeMemo = function(a_s) {
   var me = this;
   me._byznode.MakeMemo(a_s);

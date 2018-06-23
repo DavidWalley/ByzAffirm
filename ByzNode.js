@@ -18,7 +18,6 @@ var G = require("./G.js");
 var g = G.g;
 var ByzCrypto = require("./ByzCrypto.js");
 var byzcrypto;
-var ByzTest = require("./ByzTest.js");
 
 // ByzAffirm network node class constructor.
 function ByzNode() {
@@ -51,7 +50,7 @@ ByzNode.prototype._bRenew = function(a_byztestMom, a_iWhichMe, a_nNodes, a_takeE
   me._takeErr_ms = a_takeErr_ms;
   me._sName = G.sNAME(me._iWhich) + me._iWhich;
   me._byzcrypto = ByzCrypto.byzcryptoNEW(me._iWhich, me._nNodes);
-  // For each node, initialize lists of copies of encoded and signed memo.
+  // For each node, initialize lists of copies of encoded and signed message.
   me._a2sMemos = [];
   me._awhenFinalizedAt = [];
   for (var i = 0; i < me._nNodes; i++) {
@@ -73,13 +72,13 @@ ByzNode.prototype._whenNowMe_ms = function() {
   return g.whenNow_ms() + me._takeErr_ms;
 };
 
-// Create and encrypt (sign) a brand new memo with data-payload in own log.
+// Create and encrypt (sign) a brand new message with data-payload in own log.
 ByzNode.prototype.MakeMemo = function(a_sData_base64) {
   var me = this;
   // In production, the data payload should probably be a hash relating back to
   // an original record that is delivered separately from this consensus system.
   var as = a_sData_base64.split(ByzNode.sLINK);
-  davidwalley_caZQHGF = 'Check to see if it is a link (reference), e.g. "^0^2" meaning "link to ann\'s log, memo 2".davidwalley_caZQHGF';
+  // Check to see if it is a link (reference), e.g. "^0^2" meaning link to ann's log, message 2.
   if (1 < as.length) {
     if (!(as.length === 3)) {
       throw new Error("ASSERTION: Should be exactly 2 carets.");
@@ -99,7 +98,7 @@ ByzNode.prototype.MakeMemo = function(a_sData_base64) {
       return;
     }
   }
-  // Create a memo:
+  // Create a message:
   var s = me._iWhich + "," + me._a2sMemos[me._iWhich].length + "," + me._whenNowMe_ms() + "," + a_sData_base64;
   var sEncrypted = me._byzcrypto.sEncryptPrivate_base64(s);
   me._a2sMemos[me._iWhich].push(s + ", " + sEncrypted);
@@ -130,11 +129,11 @@ ByzNode.prototype.sGetNewsForCaller = function(a_sHowMuchCallerKnows) {
   var tookDelta_ms = whenNowMe_ms - whenCaller_ms;
   // Check synchronicity of clocks.
   if (tookDelta_ms < -ByzNode.takeOKsHORT_ms) {
-    me._Tell("Error2 TOO SOON '" + a_sHowMuchCallerKnows + "' " + whenCaller_ms + " (" + tookDelta_ms + ").");
+    me._Tell("HEARD TOO SOON '" + a_sHowMuchCallerKnows + "' " + whenCaller_ms + " (" + tookDelta_ms + ").");
     return "Error2";
   }
   if (ByzNode.takeOKsHORT_ms < tookDelta_ms) {
-    me._Tell("Error3 TOO LONG '" + a_sHowMuchCallerKnows + "' " + whenCaller_ms + " (" + tookDelta_ms + ").");
+    me._Tell("HEARD TOO LATE '" + a_sHowMuchCallerKnows + "' " + whenCaller_ms + " (" + tookDelta_ms + ").");
     return "Error3";
   }
   
@@ -249,15 +248,6 @@ ByzNode.prototype._Hark_Process = function(a_sMemo) {
   }
 };
 
-// Report known data payloads, timestamp, and the certainty of timestamp.
-ByzNode.prototype.sWhichIsFirst = function(a_Node0, a_Memo0, a_Node1, a_Memo1) {
-  var me = this;
-  var r_s = "thinks:";
-  
-  r_s += " can compare...";
-  return r_s + "!";
-};
-
 // Clean up missing spaces and/or bad links in table.
 ByzNode.prototype._Cleanup = function(a_anLengthWas) {
   var me = this;
@@ -280,7 +270,7 @@ ByzNode.prototype._Cleanup = function(a_anLengthWas) {
   return true;
 };
 
-// Display memo in console.
+// Display message in console.
 ByzNode.prototype._Tell = function(a_sText) {
   var me = this;
   console.log("." + g.whenNow_ms() + " " + me._sName + " " + me._whenNowMe_ms() + " " + a_sText);
@@ -310,7 +300,6 @@ ByzNode.prototype.sShowMyCopies = function() {
     }
   }
   
-  r_s += "\n  " + me.sWhichIsFirst(1, 0, 2, 0);
   return r_s;
 };
 

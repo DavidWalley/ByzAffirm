@@ -36,13 +36,13 @@ ByzCrypto.prototype._bRenew = function(a_iWhichAmI, a_nNodes) {
   return true;
 };
 
-// Encrypt a memo (using a private key - i.e., signing a public message), returning a base-64 encoded text string.
+// Encrypt a message (using a private key - i.e., signing a public message), returning a base-64 encoded text string.
 ByzCrypto.prototype.sEncryptPrivate_base64 = function(a_sMemo) {
   var me = this;
   return me._nodersaPrivate.encryptPrivate(a_sMemo, "base64");
 };
 
-// Decrypt a memo (using a public key - i.e., verifying the origin and integrity of a message).
+// Decrypt a message (using a public key - i.e., verifying the origin and integrity of a message).
 ByzCrypto.prototype.sDecryptPublic = function(a_iFrom, a_sEncrypted_base64) {
   var me = this;
   var r_s = "";

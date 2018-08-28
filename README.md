@@ -98,3 +98,4 @@ My objective is a free and open source Async BFT, so if someone else beats me to
 - https://medium.com/algorand/algorands-instant-consensus-protocol-e66ac5807e37. Unfortunately, it appears this one is subject to patents as well. Here's hoping that Hashgraph and Algorand compete, and one of them decides to go open source to beat the other.
 - https://medium.com/monet-network/from-peanuts-to-hashgraph-46c2308982c5. From Peanuts to Hashgraph - A bit of humor to help understand Hashgraph and why Charlie Brown cannot kick a football.
 - https://lamport.azurewebsites.net/pubs/time-clocks.pdf. Time, Clocks, and the Ordering of Events in a Distributed System - A blast from the past (1978).
+- https://github.com/maidsafe/parsec. PARSEC may be the open source solution. Source code is out there. I think I will wait and see if Hashgraph sues them, but Hashgraph should probably wait to see if PARSEC gets any traction before they bother. So I wait.
